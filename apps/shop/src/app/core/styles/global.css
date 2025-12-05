@@ -1,7 +1,13 @@
+@import url('./variables.css');
+
 *,
 ::after,
 ::before {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+}
+
+#root {
+  isolation: isolate;
 }
