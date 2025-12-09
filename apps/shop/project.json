@@ -10,6 +10,9 @@
       "options": {
         "command": "stylelint \"apps/**/*.{scss,css}\" --fix"
       }
+    },
+    "serve": {
+      "dependsOn": ["api:serve"]
     }
   }
 }
