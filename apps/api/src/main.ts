@@ -12,6 +12,7 @@ async function bootstrap() {
   const globalPrefix = apiConfigService.globalPrefix
 
   app.setGlobalPrefix(globalPrefix)
+  app.enableShutdownHooks()
 
   await app.listen(port)
 
