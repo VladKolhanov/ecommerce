@@ -23,4 +23,8 @@ export class EnvService {
       'development'
     )
   }
+
+  get apiVersion() {
+    return this.configService.getOrThrow('API_VERSION', { infer: true })
+  }
 }

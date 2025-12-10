@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common'
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 
 import { AppModule } from './app.module'
@@ -13,7 +13,18 @@ async function bootstrap() {
   const globalPrefix = apiConfigService.globalPrefix
 
   app.setGlobalPrefix(globalPrefix)
+  app.enableVersioning({
+    defaultVersion: apiConfigService.apiVersion,
+    type: VersioningType.URI,
+  })
   app.enableShutdownHooks()
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    })
+  )
   setupSwagger(app)
 
   await app.listen(port)
