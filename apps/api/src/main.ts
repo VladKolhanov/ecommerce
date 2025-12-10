@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core'
 
 import { AppModule } from './app.module'
 import { EnvService } from './core/env/env.service'
+import { setupSwagger } from './core/swagger/setup-swagger'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -13,6 +14,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix(globalPrefix)
   app.enableShutdownHooks()
+  setupSwagger(app)
 
   await app.listen(port)
 
