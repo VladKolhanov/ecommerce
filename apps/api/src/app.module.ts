@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { APP_GUARD } from '@nestjs/core'
+import { APP_FILTER, APP_GUARD } from '@nestjs/core'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 
 import { CoreModule } from './core/core.module'
 import { validateEnvVars } from './core/env/env.validation'
+import { AllExceptionsFilter } from './core/filters/all-exceptions.filter'
 import { HealthModule } from './modules/health/health.module'
 
 @Module({
@@ -29,6 +30,12 @@ import { HealthModule } from './modules/health/health.module'
       ],
     }),
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}
