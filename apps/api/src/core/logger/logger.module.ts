@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { Module } from '@nestjs/common'
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino'
 
-import { EnvModule } from '../env/env.module'
-import { EnvService } from '../env/env.service'
+import { EnvModule } from '@/core/env/env.module'
+import { EnvService } from '@/core/env/env.service'
 
 @Module({
   imports: [
@@ -13,21 +13,49 @@ import { EnvService } from '../env/env.service'
       useFactory: async (envService: EnvService) => {
         const isDev = envService.isDev
         const logLevel = envService.logLevel
+        const logtailToken = envService.logtailToken
+        const logtailHost = envService.logtailHost
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const targets: any = []
+
+        if (isDev) {
+          targets.push({
+            target: 'pino-pretty',
+            options: {
+              singleLine: false,
+              colorize: true,
+              translateTime: 'SYS:standard',
+              ignore: 'pid,hostname',
+            },
+          })
+        } else {
+          targets.push({
+            target: 'pino/file',
+            options: {
+              destination: 1,
+            },
+          })
+        }
+
+        if (logtailToken && logtailHost) {
+          targets.push({
+            target: '@logtail/pino',
+            options: {
+              sourceToken: logtailToken,
+              options: {
+                endpoint: logtailHost,
+              },
+            },
+          })
+        }
 
         return {
           pinoHttp: {
             level: logLevel,
-            transport: isDev
-              ? {
-                  target: 'pino-pretty',
-                  options: {
-                    singleLine: false,
-                    colorize: true,
-                    translateTime: 'SYS:standard',
-                    ignore: 'pid,hostname',
-                  },
-                }
-              : undefined,
+            transport: {
+              targets,
+            },
             genReqId: (req, res) => {
               const existingID =
                 req.headers['x-request-id'] || req.headers['x-correlation-id']

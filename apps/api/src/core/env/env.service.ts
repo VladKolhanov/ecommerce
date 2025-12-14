@@ -31,4 +31,12 @@ export class EnvService {
   get logLevel() {
     return this.configService.getOrThrow('LOG_LEVEL', { infer: true })
   }
+
+  get logtailToken() {
+    return this.configService.get('LOGTAIL_TOKEN', { infer: true })
+  }
+
+  get logtailHost() {
+    return this.configService.get('LOGTAIL_HOST', { infer: true })
+  }
 }

@@ -6,14 +6,12 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { CoreModule } from './core/core.module'
 import { validateEnvVars } from './core/env/env.validation'
 import { AllExceptionsFilter } from './core/filters/all-exceptions.filter'
-import { LoggerModule } from './core/logger/logger.module'
 import { HealthModule } from './modules/health/health.module'
 
 @Module({
   imports: [
     CoreModule,
     HealthModule,
-    LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `apps/api/.env.${process.env.NODE_ENV || 'development'}`,
