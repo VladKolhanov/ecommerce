@@ -1,17 +1,21 @@
 import { z } from 'zod'
 
+export const zStringRequired = () =>
+  z.string().trim().min(1, { message: 'is required field' })
+export const zStringOptional = () => z.string().trim().optional()
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
-  PORT: z.string().nonempty('is required'),
-  GLOBAL_PREFIX: z.string().nonempty('is required'),
-  API_VERSION: z.string().nonempty('is required'),
   LOG_LEVEL: z
     .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
     .default('info'),
-  LOGTAIL_TOKEN: z.string().optional(),
-  LOGTAIL_HOST: z.string().optional(),
+  PORT: zStringRequired(),
+  GLOBAL_PREFIX: zStringRequired(),
+  API_VERSION: zStringRequired(),
+  LOGTAIL_TOKEN: zStringOptional(),
+  LOGTAIL_HOST: zStringOptional(),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>

@@ -14,7 +14,10 @@ import { HealthModule } from './modules/health/health.module'
     HealthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `apps/api/.env.${process.env.NODE_ENV || 'development'}`,
+      envFilePath: [
+        'apps/api/.env',
+        `apps/api/.env.${process.env.NODE_ENV || 'development'}`,
+      ],
       validate: validateEnvVars,
       cache: true,
       validationOptions: {
