@@ -7,6 +7,7 @@ const envSchema = z.object({
   PORT: z.string().nonempty('is required'),
   GLOBAL_PREFIX: z.string().nonempty('is required'),
   API_VERSION: z.string().nonempty('is required'),
+  LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>

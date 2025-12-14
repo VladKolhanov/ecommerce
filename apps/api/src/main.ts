@@ -1,5 +1,6 @@
-import { Logger, ValidationPipe, VersioningType } from '@nestjs/common'
+import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
+import { Logger } from 'nestjs-pino'
 
 import { AppModule } from './app.module'
 import { EnvService } from './core/env/env.service'
@@ -8,12 +9,13 @@ import { ErrorCode } from './core/exceptions/codes.enum'
 import { setupSwagger } from './core/swagger/setup-swagger'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, { bufferLogs: true })
   const apiConfigService = app.get(EnvService)
 
   const port = apiConfigService.port
   const globalPrefix = apiConfigService.globalPrefix
 
+  app.useLogger(app.get(Logger))
   app.setGlobalPrefix(globalPrefix)
   app.enableVersioning({
     defaultVersion: apiConfigService.apiVersion,
@@ -42,10 +44,6 @@ async function bootstrap() {
   setupSwagger(app)
 
   await app.listen(port)
-
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
-  )
 }
 
 bootstrap()

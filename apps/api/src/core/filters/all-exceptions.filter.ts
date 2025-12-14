@@ -4,9 +4,9 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  Logger,
 } from '@nestjs/common'
 import { HttpAdapterHost } from '@nestjs/core'
+import { Logger } from 'nestjs-pino'
 
 import { AppException, ErrorCode, ErrorMessages } from '../exceptions'
 
@@ -15,12 +15,15 @@ type ErrorResponse = {
   code: ErrorCode | `HTTP_${HttpStatus}`
   message: string
   details: AppException['details']
+  traceId: string
 }
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name)
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+  constructor(
+    private readonly httpAdapterHost: HttpAdapterHost,
+    private readonly logger: Logger
+  ) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost
@@ -32,6 +35,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       code: ErrorCode.INTERNAL_SERVER_ERROR,
       message: ErrorMessages.INTERNAL_SERVER_ERROR,
+      traceId: request.id || request.headers['x-request-id'] || null,
       details: null,
     }
 
@@ -48,8 +52,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (responseBody.status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
-        `Exception on ${httpAdapter.getRequestUrl(request)}`,
-        exception instanceof Error ? exception.stack : String(exception)
+        {
+          err: exception,
+          req: request,
+        },
+        `Request failed on ${request.url}`
       )
     }
 

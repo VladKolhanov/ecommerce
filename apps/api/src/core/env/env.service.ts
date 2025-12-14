@@ -27,4 +27,8 @@ export class EnvService {
   get apiVersion() {
     return this.configService.getOrThrow('API_VERSION', { infer: true })
   }
+
+  get logLevel() {
+    return this.configService.getOrThrow('LOG_LEVEL', { infer: true })
+  }
 }
