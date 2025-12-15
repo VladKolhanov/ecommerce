@@ -17,7 +17,6 @@ export const App = () => {
   const [showDevtools, setShowDevtools] = useState(false)
 
   useEffect(() => {
-    // @ts-expect-error toggleDevtools is custom function
     window.toggleDevtools = () => setShowDevtools((old) => !old)
   }, [])
 
