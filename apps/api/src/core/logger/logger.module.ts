@@ -1,9 +1,9 @@
-import { randomUUID } from 'node:crypto'
-import { Module } from '@nestjs/common'
-import { LoggerModule as PinoLoggerModule } from 'nestjs-pino'
+import { randomUUID } from "node:crypto"
+import { Module } from "@nestjs/common"
+import { LoggerModule as PinoLoggerModule } from "nestjs-pino"
 
-import { EnvModule } from '@/core/env/env.module'
-import { EnvService } from '@/core/env/env.service'
+import { EnvModule } from "@/core/env/env.module"
+import { EnvService } from "@/core/env/env.service"
 
 @Module({
   imports: [
@@ -21,17 +21,17 @@ import { EnvService } from '@/core/env/env.service'
 
         if (isDev) {
           targets.push({
-            target: 'pino-pretty',
+            target: "pino-pretty",
             options: {
               singleLine: false,
               colorize: true,
-              translateTime: 'SYS:standard',
-              ignore: 'pid,hostname',
+              translateTime: "SYS:standard",
+              ignore: "pid,hostname",
             },
           })
         } else {
           targets.push({
-            target: 'pino/file',
+            target: "pino/file",
             options: {
               destination: 1,
             },
@@ -40,7 +40,7 @@ import { EnvService } from '@/core/env/env.service'
 
         if (logtailToken && logtailHost) {
           targets.push({
-            target: '@logtail/pino',
+            target: "@logtail/pino",
             options: {
               sourceToken: logtailToken,
               options: {
@@ -58,23 +58,23 @@ import { EnvService } from '@/core/env/env.service'
             },
             genReqId: (req, res) => {
               const existingID =
-                req.headers['x-request-id'] || req.headers['x-correlation-id']
+                req.headers["x-request-id"] || req.headers["x-correlation-id"]
               if (existingID) return existingID
 
               const id = randomUUID()
-              res.setHeader('X-Request-Id', id)
+              res.setHeader("X-Request-Id", id)
               return id
             },
             autoLogging: {
               ignore: (req) => {
-                return (req.url as string).includes('/health')
+                return (req.url as string).includes("/health")
               },
             },
             redact: {
               paths: [
-                'req.headers.authorization',
-                'req.body.password',
-                'req.body.confirmPassword',
+                "req.headers.authorization",
+                "req.body.password",
+                "req.body.confirmPassword",
               ],
               remove: true,
             },

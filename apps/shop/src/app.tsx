@@ -1,12 +1,12 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { lazy, Suspense, useEffect, useState } from "react"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 
-import { Providers } from './core/providers'
-import { router } from './core/router'
+import { Providers } from "./core/providers"
+import { router } from "./core/router"
 
 const ReactQueryDevtoolsProduction = lazy(async () =>
-  import('@tanstack/react-query-devtools/build/modern/production.js').then(
+  import("@tanstack/react-query-devtools/build/modern/production.js").then(
     (d) => ({
       default: d.ReactQueryDevtools,
     })

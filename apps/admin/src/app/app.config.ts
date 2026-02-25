@@ -2,10 +2,10 @@ import {
   type ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
-} from '@angular/core'
-import { provideRouter } from '@angular/router'
+} from "@angular/core"
+import { provideRouter } from "@angular/router"
 
-import { appRoutes } from './app.routes'
+import { appRoutes } from "./app.routes"
 
 export const appConfig: ApplicationConfig = {
   providers: [

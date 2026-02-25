@@ -1,2 +1,2 @@
 pnpm exec lint-staged
-nx run-many --target=typecheck --projects=shop,admin --parallel
+nx run-many --target=typecheck --projects=shop,admin,api --parallel

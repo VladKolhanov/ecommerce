@@ -1,7 +1,7 @@
-import { HttpException, HttpStatus } from '@nestjs/common'
+import { HttpException, HttpStatus } from "@nestjs/common"
 
-import type { ErrorCode } from './codes.enum'
-import { ErrorMessages } from './messages.constant'
+import type { ErrorCode } from "./codes.enum"
+import { ErrorMessages } from "./messages.constant"
 
 type AppExceptionDetails = Record<string, unknown> | Record<string, unknown>[]
 
@@ -18,7 +18,7 @@ export class AppException extends HttpException {
 
   constructor(options: AppExceptionOptions) {
     const message =
-      options.message || ErrorMessages[options.code] || 'Unknown error'
+      options.message || ErrorMessages[options.code] || "Unknown error"
     const status = options.status || HttpStatus.BAD_REQUEST
 
     super(message, status)

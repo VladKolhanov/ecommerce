@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
+import { useQuery } from "@tanstack/react-query"
+import { Link } from "@tanstack/react-router"
 
 type Todo = {
   userId: number
@@ -10,10 +10,10 @@ type Todo = {
 
 export const PlaceholderPage = () => {
   const { data, isPending } = useQuery<Todo[]>({
-    queryKey: ['placeholder'],
+    queryKey: ["placeholder"],
     queryFn: async () => {
       const todos = await fetch(
-        'https://jsonplaceholder.typicode.com/todos'
+        "https://jsonplaceholder.typicode.com/todos"
       ).then(async (res) => res.json())
 
       return todos

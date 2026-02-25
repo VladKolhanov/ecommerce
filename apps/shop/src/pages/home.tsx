@@ -1,6 +1,6 @@
-import { Link } from '@tanstack/react-router'
+import { Link } from "@tanstack/react-router"
 
-import { Button } from '~/shared/components/ui/button'
+import { Button } from "~/shared/components/ui/button"
 
 export const HomePage = () => {
   return (

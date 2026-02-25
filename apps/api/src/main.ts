@@ -1,10 +1,10 @@
-import { VersioningType } from '@nestjs/common'
-import { NestFactory } from '@nestjs/core'
-import { Logger } from 'nestjs-pino'
+import { VersioningType } from "@nestjs/common"
+import { NestFactory } from "@nestjs/core"
+import { Logger } from "nestjs-pino"
 
-import { AppModule } from './app.module'
-import { EnvService } from './core/env/env.service'
-import { setupSwagger } from './core/swagger/setup-swagger'
+import { AppModule } from "./app.module"
+import { EnvService } from "./core/env/env.service"
+import { setupSwagger } from "./core/swagger/setup-swagger"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true })

@@ -1,16 +1,16 @@
-import baseConfig from '../../eslint.config.mjs'
+import baseConfig from "../../eslint.config.mjs"
 
 export default [
   ...baseConfig,
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    ignores: ['**/env.module.ts'],
+    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+    ignores: ["**/env.module.ts", "**/*.config.*"],
     rules: {
-      'no-restricted-properties': [
-        'error',
+      "no-restricted-properties": [
+        "error",
         {
-          object: 'process',
-          property: 'env',
+          object: "process",
+          property: "env",
           message:
             "Use `import { EnvModule } from '@/core/env/env.module'` instead to ensure validated types.",
         },

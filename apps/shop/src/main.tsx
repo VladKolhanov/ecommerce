@@ -1,9 +1,9 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
+import { StrictMode } from "react"
+import ReactDOM from "react-dom/client"
 
-import { App } from './app'
+import { App } from "./app"
 
-const rootElement = document.getElementById('root') as HTMLElement
+const rootElement = document.getElementById("root") as HTMLElement
 
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)

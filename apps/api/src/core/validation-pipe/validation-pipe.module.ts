@@ -1,7 +1,7 @@
-import { Module, ValidationPipe } from '@nestjs/common'
-import { APP_PIPE } from '@nestjs/core'
+import { Module, ValidationPipe } from "@nestjs/common"
+import { APP_PIPE } from "@nestjs/core"
 
-import { AppException, ErrorCode } from '@/core/exceptions'
+import { AppException, ErrorCode } from "@/core/exceptions"
 
 @Module({
   providers: [

@@ -1,16 +1,16 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 export const zStringRequired = () =>
-  z.string().trim().min(1, { message: 'is required field' })
+  z.string().trim().min(1, { message: "is required field" })
 export const zStringOptional = () => z.string().trim().optional()
 
 const envSchema = z.object({
   NODE_ENV: z
-    .enum(['development', 'production', 'test'])
-    .default('development'),
+    .enum(["development", "production", "test"])
+    .default("development"),
   LOG_LEVEL: z
-    .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
-    .default('info'),
+    .enum(["trace", "debug", "info", "warn", "error", "fatal"])
+    .default("info"),
   PORT: zStringRequired(),
   GLOBAL_PREFIX: zStringRequired(),
   API_VERSION: zStringRequired(),
@@ -31,10 +31,10 @@ export const validateEnvVars = (config: Record<string, unknown>) => {
     ).reduce((acc, [fieldName, messages]) => {
       const message = messages.reduce((acc, message) => {
         return acc.length === 0 ? `❗ ${message}\n` : `${acc}❗ ${message}\n`
-      }, '')
+      }, "")
 
       return `${acc}➡️   ${fieldName}:\n${message}\n`
-    }, '\n❌ Invalid environment variables:\n')
+    }, "\n❌ Invalid environment variables:\n")
 
     console.error(formattedErrorMessages)
     throw new Error(formattedErrorMessages)

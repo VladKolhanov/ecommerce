@@ -1,42 +1,42 @@
-import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import { Injectable } from "@nestjs/common"
+import { ConfigService } from "@nestjs/config"
 
-import { EnvConfig } from '@/core/env/env.validation'
+import { EnvConfig } from "@/core/env/env.validation"
 
 @Injectable()
 export class EnvService {
   constructor(private readonly configService: ConfigService<EnvConfig>) {}
 
   get port() {
-    return this.configService.getOrThrow('PORT', { infer: true })
+    return this.configService.getOrThrow("PORT", { infer: true })
   }
 
   get globalPrefix() {
-    return this.configService.getOrThrow('GLOBAL_PREFIX', {
+    return this.configService.getOrThrow("GLOBAL_PREFIX", {
       infer: true,
     })
   }
 
   get isDev() {
     return (
-      this.configService.getOrThrow('NODE_ENV', { infer: true }) ===
-      'development'
+      this.configService.getOrThrow("NODE_ENV", { infer: true }) ===
+      "development"
     )
   }
 
   get apiVersion() {
-    return this.configService.getOrThrow('API_VERSION', { infer: true })
+    return this.configService.getOrThrow("API_VERSION", { infer: true })
   }
 
   get logLevel() {
-    return this.configService.getOrThrow('LOG_LEVEL', { infer: true })
+    return this.configService.getOrThrow("LOG_LEVEL", { infer: true })
   }
 
   get logtailToken() {
-    return this.configService.get('LOGTAIL_TOKEN', { infer: true })
+    return this.configService.get("LOGTAIL_TOKEN", { infer: true })
   }
 
   get logtailHost() {
-    return this.configService.get('LOGTAIL_HOST', { infer: true })
+    return this.configService.get("LOGTAIL_HOST", { infer: true })
   }
 }

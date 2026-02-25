@@ -1,21 +1,21 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get } from "@nestjs/common"
 import {
   HealthCheck,
   HealthCheckResult,
   HealthCheckService,
   HealthIndicatorResult,
-} from '@nestjs/terminus'
+} from "@nestjs/terminus"
 
-@Controller('health')
+@Controller("health")
 export class HealthController {
   constructor(private readonly healthCheckService: HealthCheckService) {}
 
-  @Get('liveness')
+  @Get("liveness")
   @HealthCheck()
   async check(): Promise<HealthCheckResult> {
     return this.healthCheckService.check([
       async (): Promise<HealthIndicatorResult> => ({
-        'nestjs-api': { status: 'up' },
+        "nestjs-api": { status: "up" },
       }),
     ])
   }

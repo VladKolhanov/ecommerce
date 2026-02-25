@@ -4,17 +4,17 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-} from '@nestjs/common'
-import { HttpAdapterHost } from '@nestjs/core'
-import { Logger } from 'nestjs-pino'
+} from "@nestjs/common"
+import { HttpAdapterHost } from "@nestjs/core"
+import { Logger } from "nestjs-pino"
 
-import { AppException, ErrorCode, ErrorMessages } from '../exceptions'
+import { AppException, ErrorCode, ErrorMessages } from "../exceptions"
 
 type ErrorResponse = {
   status: HttpStatus
   code: ErrorCode | `HTTP_${HttpStatus}`
   message: string
-  details: AppException['details']
+  details: AppException["details"]
   traceId: string
 }
 
@@ -35,7 +35,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       code: ErrorCode.INTERNAL_SERVER_ERROR,
       message: ErrorMessages.INTERNAL_SERVER_ERROR,
-      traceId: request.id || request.headers['x-request-id'] || null,
+      traceId: request.id || request.headers["x-request-id"] || null,
       details: null,
     }
 
