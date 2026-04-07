@@ -22,7 +22,10 @@ export const App = () => {
 
   return (
     <Providers>
-      <TanStackRouterDevtools router={router} initialIsOpen={false} />
+      <TanStackRouterDevtools
+        router={router}
+        initialIsOpen={false}
+      />
       <ReactQueryDevtools initialIsOpen={false} />
       {showDevtools && (
         <Suspense fallback={null}>
