@@ -1,8 +1,5 @@
+import { zStringOptional, zStringRequired } from "@ecommerce/utils"
 import { z } from "zod"
-
-export const zStringRequired = () =>
-  z.string().trim().min(1, { message: "is required field" })
-export const zStringOptional = () => z.string().trim().optional()
 
 const envSchema = z.object({
   NODE_ENV: z

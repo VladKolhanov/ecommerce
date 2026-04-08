@@ -12,7 +12,7 @@ export default [
           object: "process",
           property: "env",
           message:
-            "Use `import { EnvModule } from '@/core/env/env.module'` instead to ensure validated types.",
+            "Use `import { EnvModule } from '@/core/env/env.module'` or relative path instead to ensure validated types.",
         },
       ],
     },

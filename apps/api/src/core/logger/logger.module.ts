@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto"
 import { Module } from "@nestjs/common"
 import { LoggerModule as PinoLoggerModule } from "nestjs-pino"
 
-import { EnvModule } from "@/core/env/env.module"
-import { EnvService } from "@/core/env/env.service"
+import { EnvModule } from "../env/env.module"
+import { EnvService } from "../env/env.service"
 
 @Module({
   imports: [
