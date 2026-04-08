@@ -3,7 +3,9 @@ import { HttpException, HttpStatus } from "@nestjs/common"
 import type { ErrorCode } from "./codes.enum"
 import { ErrorMessages } from "./messages.constant"
 
-type AppExceptionDetails = Record<string, unknown> | Record<string, unknown>[]
+type AppExceptionDetails =
+  | Record<PropertyKey, unknown>
+  | Record<PropertyKey, unknown>[]
 
 interface AppExceptionOptions {
   code: ErrorCode

@@ -12,7 +12,7 @@ export const setupSwagger = (app: INestApplication) => {
 
   const documentFactory = () => SwaggerModule.createDocument(app, config)
 
-  SwaggerModule.setup("api/docs", app, documentFactory, {
+  SwaggerModule.setup("/docs", app, documentFactory, {
     jsonDocumentUrl: "/swagger.json",
     yamlDocumentUrl: "/swagger.yaml",
     swaggerOptions: {

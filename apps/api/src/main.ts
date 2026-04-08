@@ -9,20 +9,27 @@ import { setupSwagger } from "./core/swagger/setup-swagger"
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true })
   const apiConfigService = app.get(EnvService)
+  const logger = app.get(Logger)
 
   const port = apiConfigService.port
   const globalPrefix = apiConfigService.globalPrefix
+  const apiVersion = apiConfigService.apiVersion
 
   app.useLogger(app.get(Logger))
   app.setGlobalPrefix(globalPrefix)
   app.enableVersioning({
-    defaultVersion: apiConfigService.apiVersion,
+    defaultVersion: apiVersion,
     type: VersioningType.URI,
   })
   app.enableShutdownHooks()
   setupSwagger(app)
 
   await app.listen(port)
+
+  logger.log(
+    `Server running on port: http://localhost:${port}/${globalPrefix}/v${apiVersion}`
+  )
+  logger.log(`Swagger Documentation: http://localhost:${port}/docs`)
 }
 
 bootstrap()

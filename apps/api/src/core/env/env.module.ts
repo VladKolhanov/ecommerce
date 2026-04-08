@@ -14,10 +14,6 @@ import { validateEnvVars } from "./env.validation"
       ],
       validate: validateEnvVars,
       cache: true,
-      validationOptions: {
-        allowUnknown: false,
-      },
-      validatePredefined: false,
     }),
   ],
   providers: [EnvService],

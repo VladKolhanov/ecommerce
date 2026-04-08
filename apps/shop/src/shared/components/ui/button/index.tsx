@@ -1,7 +1,7 @@
-import { Button as ButtonBase } from "@base-ui-components/react/button"
+import { Button as ButtonPrimitive } from "@base-ui/react"
 
 import s from "./index.module.css"
 
-export const Button = ({ children }: ButtonBase.Props) => {
-  return <ButtonBase className={s.button}>{children}</ButtonBase>
+export const Button = ({ children }: ButtonPrimitive.Props) => {
+  return <ButtonPrimitive className={s.button}>{children}</ButtonPrimitive>
 }
