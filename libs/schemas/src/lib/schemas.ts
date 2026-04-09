@@ -1,3 +1,3 @@
-export function schemas(): string {
-  return "schemas"
-}
+import { z } from "zod"
+
+export const schema = z.object({})

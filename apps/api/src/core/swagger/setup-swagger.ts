@@ -1,5 +1,6 @@
 import type { INestApplication } from "@nestjs/common"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
+import { cleanupOpenApiDoc } from "nestjs-zod"
 
 export const setupSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
@@ -10,9 +11,10 @@ export const setupSwagger = (app: INestApplication) => {
     .addTag("")
     .build()
 
-  const documentFactory = () => SwaggerModule.createDocument(app, config)
+  const documentFactory = SwaggerModule.createDocument(app, config)
+  const document = cleanupOpenApiDoc(documentFactory)
 
-  SwaggerModule.setup("/docs", app, documentFactory, {
+  SwaggerModule.setup("/docs", app, document, {
     jsonDocumentUrl: "/swagger.json",
     yamlDocumentUrl: "/swagger.yaml",
     swaggerOptions: {
