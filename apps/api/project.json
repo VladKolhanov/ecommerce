@@ -47,7 +47,7 @@
       "continuous": true,
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+      "dependsOn": ["build", "db-up"],
       "options": {
         "buildTarget": "api:build",
         "runBuildTargetDependencies": false
@@ -59,6 +59,18 @@
         "production": {
           "buildTarget": "api:build:production"
         }
+      }
+    },
+    "db-up": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose --env-file ./apps/api/.env up -d"
+      }
+    },
+    "db-down": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose down"
       }
     },
     "test": {

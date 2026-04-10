@@ -1,0 +1,40 @@
+{
+  "name": "orm",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/orm/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/orm",
+        "main": "libs/orm/src/index.ts",
+        "tsConfig": "libs/orm/tsconfig.lib.json",
+        "assets": ["libs/orm/*.md"]
+      }
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit generate --config=./drizzle.config.ts",
+        "cwd": "libs/orm"
+      }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit migrate --config=./drizzle.config.ts",
+        "cwd": "libs/orm"
+      }
+    },
+    "push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "drizzle-kit push --config=./drizzle.config.ts",
+        "cwd": "libs/orm"
+      }
+    }
+  }
+}
