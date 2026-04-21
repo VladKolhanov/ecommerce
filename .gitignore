@@ -53,3 +53,4 @@ vite.config.*.timestamp*
 .env
 .env.*
 !.env.*.sample
+!.env.docker.development
