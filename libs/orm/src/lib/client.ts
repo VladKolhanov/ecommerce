@@ -1,7 +1,7 @@
 import { drizzle as drizzlePgDriver } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
 
-import * as schema from "./schemas/todo"
+import * as schema from "./schemas/auth"
 
 const connectionString = process.env.DATABASE_URL
 
