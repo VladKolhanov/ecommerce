@@ -17,9 +17,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ecommerce/schemas": ["libs/schemas/src/index.ts"],
       "@ecommerce/utils": ["libs/utils/src/index.ts"],
-      "@ecommerce/orm": ["libs/orm/src/index.ts"]
+      "@ecommerce/data-access": ["libs/data-access/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -5,7 +5,7 @@ import { timestamps } from "./_helpers"
 
 export const rolesEnum = pgEnum("roles", ["user", "manager", "admin"])
 
-export const user = pgTable("users", {
+export const userTable = pgTable("users", {
   id: uuid().defaultRandom().primaryKey(),
   email: varchar("email").notNull().unique(),
   password: varchar("password").notNull(),
@@ -13,18 +13,18 @@ export const user = pgTable("users", {
   ...timestamps,
 })
 
-export const token = pgTable("tokens", {
+export const tokenTable = pgTable("tokens", {
   id: uuid().defaultRandom().primaryKey(),
   token: varchar("token").notNull().unique(),
   expires: timestamp("expires", { mode: "date" }).notNull(),
   userId: uuid("user_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => userTable.id, { onDelete: "cascade" }),
 })
 
-export const tokenRelations = relations(token, ({ one }) => ({
-  user: one(user, {
-    fields: [token.userId],
-    references: [user.id],
+export const tokenRelations = relations(tokenTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [tokenTable.userId],
+    references: [userTable.id],
   }),
 }))

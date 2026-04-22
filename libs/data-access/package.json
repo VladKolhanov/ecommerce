@@ -1,0 +1,17 @@
+{
+  "name": "@ecommerce/data-access",
+  "version": "0.0.1",
+  "private": true,
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "dotenv": "^17.4.1",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.20.0",
+    "drizzle-zod": "^0.8.3",
+    "zod": "^4.3.6"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "name": "orm",
+  "name": "data-access",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/orm/src",
+  "sourceRoot": "libs/data-access/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -9,38 +9,38 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/orm",
-        "main": "libs/orm/src/index.ts",
-        "tsConfig": "libs/orm/tsconfig.lib.json",
-        "assets": ["libs/orm/*.md"]
+        "outputPath": "dist/libs/data-access",
+        "main": "libs/data-access/src/index.ts",
+        "tsConfig": "libs/data-access/tsconfig.lib.json",
+        "assets": ["libs/data-access/*.md"]
       }
     },
     "generate": {
       "executor": "nx:run-commands",
       "options": {
         "command": "drizzle-kit generate --config=drizzle.config.ts",
-        "cwd": "libs/orm"
+        "cwd": "libs/data-access"
       }
     },
     "migrate": {
       "executor": "nx:run-commands",
       "options": {
         "command": "drizzle-kit migrate --config=drizzle.config.ts",
-        "cwd": "libs/orm"
+        "cwd": "libs/data-access"
       }
     },
     "push": {
       "executor": "nx:run-commands",
       "options": {
         "command": "drizzle-kit push --config=drizzle.config.ts",
-        "cwd": "libs/orm"
+        "cwd": "libs/data-access"
       }
     },
     "studio": {
       "executor": "nx:run-commands",
       "options": {
         "command": "drizzle-kit studio --config=drizzle.config.ts --port=5555",
-        "cwd": "libs/orm"
+        "cwd": "libs/data-access"
       }
     }
   }
