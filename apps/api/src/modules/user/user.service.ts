@@ -1,28 +1,41 @@
-import { Injectable } from "@nestjs/common"
+import { ConflictException, Injectable } from "@nestjs/common"
 import argon2 from "argon2"
 
+import {
+  CreateUserDto,
+  DeleteUserDto,
+  FindOneUserByEmailDto,
+  FindOneUserByIdDto,
+} from "./dto/user.dto"
 import { UserRepository } from "./user.repository"
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async save(user: Parameters<typeof this.userRepository.create>[0]) {
+  async save(user: CreateUserDto) {
+    const isUserExist = !!(await this.findByEmail({
+      email: user.email,
+    }))
+
+    if (isUserExist) {
+      throw new ConflictException("User already exist")
+    }
+
     const hashedPassword = await this.hashPassword(user.password)
+
     return this.userRepository.create({ ...user, password: hashedPassword })
   }
 
-  async findById(id: Parameters<typeof this.userRepository.findById>[0]) {
-    return this.userRepository.findById(id)
+  async findById({ id }: FindOneUserByIdDto) {
+    return this.userRepository.findOneById(id)
   }
 
-  async findByEmail(
-    email: Parameters<typeof this.userRepository.findByEmail>[0]
-  ) {
-    return this.userRepository.findByEmail(email)
+  async findByEmail({ email }: FindOneUserByEmailDto) {
+    return this.userRepository.findOneByEmail(email)
   }
 
-  async delete(id: Parameters<typeof this.userRepository.deleteOne>[0]) {
+  async delete({ id }: DeleteUserDto) {
     return this.userRepository.deleteOne(id)
   }
 

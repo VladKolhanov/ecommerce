@@ -19,16 +19,16 @@ export class UserController {
 
   @Get("id/:id")
   async findOneUserById(@Param() dto: FindOneUserByIdDto) {
-    return this.userService.findById(dto.id)
+    return this.userService.findById(dto)
   }
 
   @Get("email/:email")
   async findOneUserByEmail(@Param() dto: FindOneUserByEmailDto) {
-    return this.userService.findByEmail(dto.email)
+    return this.userService.findByEmail(dto)
   }
 
   @Delete(":id")
   async deleteUser(@Param() dto: DeleteUserDto) {
-    return this.userService.delete(dto.id)
+    return this.userService.delete(dto)
   }
 }

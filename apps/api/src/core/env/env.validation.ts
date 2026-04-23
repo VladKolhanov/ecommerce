@@ -13,6 +13,8 @@ const envSchema = z.object({
   API_VERSION: zStringRequired(),
   LOGTAIL_TOKEN: zStringOptional(),
   LOGTAIL_HOST: zStringOptional(),
+  JWT_SECRET: zStringRequired(),
+  JWT_EXPIRE: z.coerce.number(),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>

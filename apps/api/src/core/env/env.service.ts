@@ -39,4 +39,12 @@ export class EnvService {
   get logtailHost() {
     return this.configService.get("LOGTAIL_HOST", { infer: true })
   }
+
+  get jwtSecret() {
+    return this.configService.getOrThrow("JWT_SECRET", { infer: true })
+  }
+
+  get jwtExpire() {
+    return this.configService.getOrThrow("JWT_EXPIRE", { infer: true })
+  }
 }
