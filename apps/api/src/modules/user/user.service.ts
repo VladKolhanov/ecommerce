@@ -1,24 +1,29 @@
-import { dalUser } from "@ecommerce/data-access"
 import { Injectable } from "@nestjs/common"
 import argon2 from "argon2"
 
+import { UserRepository } from "./user.repository"
+
 @Injectable()
 export class UserService {
-  async save(user: Parameters<typeof dalUser.create>[0]) {
+  constructor(private readonly userRepository: UserRepository) {}
+
+  async save(user: Parameters<typeof this.userRepository.create>[0]) {
     const hashedPassword = await this.hashPassword(user.password)
-    return dalUser.create({ ...user, password: hashedPassword })
+    return this.userRepository.create({ ...user, password: hashedPassword })
   }
 
-  findById(id: Parameters<typeof dalUser.findById>[0]) {
-    return dalUser.findById(id)
+  async findById(id: Parameters<typeof this.userRepository.findById>[0]) {
+    return this.userRepository.findById(id)
   }
 
-  findByEmail(email: Parameters<typeof dalUser.findByEmail>[0]) {
-    return dalUser.findByEmail(email)
+  async findByEmail(
+    email: Parameters<typeof this.userRepository.findByEmail>[0]
+  ) {
+    return this.userRepository.findByEmail(email)
   }
 
-  delete(id: Parameters<typeof dalUser.deleteOne>[0]) {
-    return dalUser.deleteOne(id)
+  async delete(id: Parameters<typeof this.userRepository.deleteOne>[0]) {
+    return this.userRepository.deleteOne(id)
   }
 
   private hashPassword(password: string) {

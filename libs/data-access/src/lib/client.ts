@@ -10,5 +10,6 @@ if (!connectionString) {
 }
 
 const dbClient = drizzlePgDriver(new Pool({ connectionString }), { schema })
+type DB = typeof dbClient
 
-export { dbClient }
+export { type DB, dbClient }

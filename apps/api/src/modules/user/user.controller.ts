@@ -28,7 +28,7 @@ export class UserController {
   }
 
   @Delete(":id")
-  deleteUser(@Param() dto: DeleteUserDto) {
+  async deleteUser(@Param() dto: DeleteUserDto) {
     return this.userService.delete(dto.id)
   }
 }
