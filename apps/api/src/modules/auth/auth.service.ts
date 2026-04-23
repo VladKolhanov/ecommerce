@@ -64,7 +64,7 @@ export class AuthService {
 
     const [refreshToken] = await this.authRepository.getRefreshToken(user.id)
 
-    return { accessToken, refreshToken }
+    return { accessToken: `Bearer ${accessToken}`, refreshToken }
   }
 
   private hashPassword(password: string) {
