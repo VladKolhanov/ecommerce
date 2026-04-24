@@ -1,3 +1,4 @@
+import { UserSelectSchema } from "@ecommerce/data-access"
 import {
   ConflictException,
   Injectable,
@@ -47,7 +48,7 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials")
     }
 
-    const isPasswordsVerified = await argon2.verify(
+    const isPasswordsVerified = await this.verifyPassword(
       user.password,
       userInput.password
     )
@@ -56,18 +57,48 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials")
     }
 
-    const accessToken = this.jwtService.sign({
+    return this.generateTokens(user)
+  }
+
+  async refreshTokens(refreshToken: string): Promise<Tokens> {
+    const token = await this.authRepository.getRefreshToken(refreshToken)
+
+    if (!token) {
+      throw new UnauthorizedException()
+    }
+
+    await this.authRepository.deleteRefreshToken(refreshToken)
+
+    const user = await this.userService.findById({ id: token.userId })
+
+    if (!user) {
+      throw new UnauthorizedException()
+    }
+
+    return this.generateTokens(user)
+  }
+
+  private hashPassword(password: string) {
+    return argon2.hash(password)
+  }
+
+  private async verifyPassword(digest: string, password: string) {
+    return await argon2.verify(digest, password)
+  }
+
+  private signJwt(payload: Parameters<typeof this.jwtService.sign>[0]) {
+    return this.jwtService.sign(payload)
+  }
+
+  private async generateTokens(user: UserSelectSchema) {
+    const accessToken = this.signJwt({
       id: user.id,
       email: user.email,
       roles: user.roles,
     })
 
-    const [refreshToken] = await this.authRepository.getRefreshToken(user.id)
+    const [refreshToken] = await this.authRepository.createRefreshToken(user.id)
 
     return { accessToken: `Bearer ${accessToken}`, refreshToken }
-  }
-
-  private hashPassword(password: string) {
-    return argon2.hash(password)
   }
 }
