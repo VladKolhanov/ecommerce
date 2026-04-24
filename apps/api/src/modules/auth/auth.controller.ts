@@ -3,18 +3,16 @@ import {
   Controller,
   HttpStatus,
   Post,
+  Req,
   Res,
   UnauthorizedException,
 } from "@nestjs/common"
-import { type Response } from "express"
+import { type Request, type Response } from "express"
 
 import { Tokens } from "./auth.interfaces"
 import { AuthService } from "./auth.service"
 import { LoginDto, RegisterDto } from "./dto/auth.dto"
 import { EnvService } from "../../core/env/env.service"
-import { Cookie } from "../../shared/decorators/cookies.decorator"
-
-const REFRESH_TOKEN = "refreshToken"
 
 @Controller("auth")
 export class AuthController {
@@ -22,6 +20,8 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly envServie: EnvService
   ) {}
+
+  refreshTokenKey = this.envServie.refreshTokenCookieKey
 
   @Post("register")
   async register(@Body() dto: RegisterDto) {
@@ -38,13 +38,10 @@ export class AuthController {
   }
 
   @Post("refresh")
-  async refreshToken(
-    @Cookie(REFRESH_TOKEN) refreshToken: string,
-    @Res() res: Response
-  ) {
-    if (!refreshToken) {
-      throw new UnauthorizedException()
-    }
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
+    const refreshToken = req.cookies[this.envServie.refreshTokenCookieKey]
+
+    if (!refreshToken) throw new UnauthorizedException()
 
     const tokens = await this.authService.refreshTokens(refreshToken)
 
@@ -54,12 +51,16 @@ export class AuthController {
   }
 
   private setRefreshTokenToCookies(tokens: Tokens, res: Response) {
-    res.cookie(REFRESH_TOKEN, tokens.refreshToken.token, {
-      httpOnly: true,
-      sameSite: "lax",
-      expires: new Date(tokens.refreshToken.expires),
-      secure: !this.envServie.isDev,
-      path: "/",
-    })
+    res.cookie(
+      this.envServie.refreshTokenCookieKey,
+      tokens.refreshToken.token,
+      {
+        httpOnly: true,
+        sameSite: "lax",
+        expires: new Date(tokens.refreshToken.expires),
+        secure: !this.envServie.isDev,
+        path: "/",
+      }
+    )
   }
 }

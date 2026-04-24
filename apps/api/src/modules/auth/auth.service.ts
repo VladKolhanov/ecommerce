@@ -25,9 +25,7 @@ export class AuthService {
       email: userInput.email,
     }))
 
-    if (isUserExist) {
-      throw new ConflictException("Invalid credentials")
-    }
+    if (isUserExist) throw new ConflictException("Invalid credentials")
 
     const hashedPassword = await this.hashPassword(userInput.password)
 
@@ -44,18 +42,15 @@ export class AuthService {
       email: userInput.email,
     })
 
-    if (!user) {
-      throw new UnauthorizedException("Invalid credentials")
-    }
+    if (!user) throw new UnauthorizedException("Invalid credentials")
 
     const isPasswordsVerified = await this.verifyPassword(
       user.password,
       userInput.password
     )
 
-    if (!isPasswordsVerified) {
+    if (!isPasswordsVerified)
       throw new UnauthorizedException("Invalid credentials")
-    }
 
     return this.generateTokens(user)
   }
@@ -63,17 +58,13 @@ export class AuthService {
   async refreshTokens(refreshToken: string): Promise<Tokens> {
     const token = await this.authRepository.getRefreshToken(refreshToken)
 
-    if (!token) {
-      throw new UnauthorizedException()
-    }
+    if (!token) throw new UnauthorizedException()
 
     await this.authRepository.deleteRefreshToken(refreshToken)
 
     const user = await this.userService.findById({ id: token.userId })
 
-    if (!user) {
-      throw new UnauthorizedException()
-    }
+    if (!user) throw new UnauthorizedException()
 
     return this.generateTokens(user)
   }
@@ -86,15 +77,14 @@ export class AuthService {
     return await argon2.verify(digest, password)
   }
 
-  private signJwt(payload: Parameters<typeof this.jwtService.sign>[0]) {
-    return this.jwtService.sign(payload)
+  private async signJwt(payload: Parameters<typeof this.jwtService.sign>[0]) {
+    return this.jwtService.signAsync(payload)
   }
 
   private async generateTokens(user: UserSelectSchema) {
-    const accessToken = this.signJwt({
-      id: user.id,
-      email: user.email,
-      roles: user.roles,
+    const accessToken = await this.signJwt({
+      sub: user.id,
+      role: user.role,
     })
 
     const [refreshToken] = await this.authRepository.createRefreshToken(user.id)

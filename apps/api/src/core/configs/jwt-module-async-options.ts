@@ -6,7 +6,7 @@ import { EnvService } from "../env/env.service"
 const jwtModuleOptions = (env: EnvService): JwtModuleOptions => ({
   secret: env.jwtSecret,
   signOptions: {
-    expiresIn: env.jwtExpire,
+    expiresIn: env.jwtTokenExpire,
   },
 })
 

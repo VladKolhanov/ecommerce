@@ -12,20 +12,23 @@ import { eq } from "drizzle-orm"
 import { v4 } from "uuid"
 
 import { InjectDb } from "../../core/db/db.provider"
+import { EnvService } from "../../core/env/env.service"
 
 @Injectable()
 export class AuthRepository {
-  constructor(@InjectDb() private readonly db: DB) {}
+  constructor(
+    @InjectDb() private readonly db: DB,
+    private readonly envService: EnvService
+  ) {}
 
   async register(user: Pick<UserInsertSchema, "email" | "password">) {
     return this.db.insert(userTable).values(user).returning()
   }
 
   async createRefreshToken(userId: TokenInsertSchema["userId"]) {
-    return await this.db
-      .insert(tokenTable)
-      .values({ token: v4(), expires: add(new Date(), { months: 1 }), userId })
-      .returning()
+    const token = this.generateRefreshToken(userId)
+
+    return await this.db.insert(tokenTable).values(token).returning()
   }
 
   async getRefreshToken(refreshToken: TokenSelectSchema["token"]) {
@@ -38,5 +41,13 @@ export class AuthRepository {
     return await this.db
       .delete(tokenTable)
       .where(eq(tokenTable.token, refreshToken))
+  }
+
+  private generateRefreshToken(userId: TokenInsertSchema["userId"]) {
+    return {
+      token: v4(),
+      expires: add(new Date(), { days: this.envService.refreshTokenExpire }),
+      userId,
+    }
   }
 }

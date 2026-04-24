@@ -44,7 +44,19 @@ export class EnvService {
     return this.configService.getOrThrow("JWT_SECRET", { infer: true })
   }
 
-  get jwtExpire() {
-    return this.configService.getOrThrow("JWT_EXPIRE", { infer: true })
+  get jwtTokenExpire() {
+    return this.configService.getOrThrow("JWT_TOKEN_EXPIRE", { infer: true })
+  }
+
+  get refreshTokenExpire() {
+    return this.configService.getOrThrow("REFRESH_TOKEN_EXPIRE", {
+      infer: true,
+    })
+  }
+
+  get refreshTokenCookieKey() {
+    return this.configService.getOrThrow("REFRESH_TOKEN_COOKIE_KEY", {
+      infer: true,
+    })
   }
 }

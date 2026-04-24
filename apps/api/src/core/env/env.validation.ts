@@ -14,7 +14,9 @@ const envSchema = z.object({
   LOGTAIL_TOKEN: zStringOptional(),
   LOGTAIL_HOST: zStringOptional(),
   JWT_SECRET: zStringRequired(),
-  JWT_EXPIRE: z.coerce.number(),
+  JWT_TOKEN_EXPIRE: z.coerce.number(),
+  REFRESH_TOKEN_EXPIRE: z.coerce.number(),
+  REFRESH_TOKEN_COOKIE_KEY: zStringRequired(),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>
