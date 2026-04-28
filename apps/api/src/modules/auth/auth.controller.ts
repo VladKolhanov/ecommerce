@@ -13,8 +13,10 @@ import { Tokens } from "./auth.interfaces"
 import { AuthService } from "./auth.service"
 import { LoginDto, RegisterDto } from "./dto/auth.dto"
 import { EnvService } from "../../core/env/env.service"
+import { Public } from "../../shared/decorators/public.decorator"
 import { UserAgent } from "../../shared/decorators/user-agent.decorator"
 
+@Public()
 @Controller("auth")
 export class AuthController {
   constructor(

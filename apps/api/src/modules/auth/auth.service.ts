@@ -7,7 +7,7 @@ import {
 import { JwtService } from "@nestjs/jwt"
 import argon2 from "argon2"
 
-import { Tokens } from "./auth.interfaces"
+import { JwtPayload, Tokens } from "./auth.interfaces"
 import { AuthRepository } from "./auth.repository"
 import { LoginDto, RegisterDto } from "./dto/auth.dto"
 import { UserService } from "../user/user.service"
@@ -87,11 +87,12 @@ export class AuthService {
   }
 
   private async generateTokens(user: UserSelectSchema, agent: string) {
-    const accessToken = await this.signJwt({
+    const accessTokenPayload = {
       sub: user.id,
       role: user.role,
-    })
+    } satisfies JwtPayload
 
+    const accessToken = await this.signJwt(accessTokenPayload)
     const [refreshToken] = await this.authRepository.createRefreshToken(
       user.id,
       agent

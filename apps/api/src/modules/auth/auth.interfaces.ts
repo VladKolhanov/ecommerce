@@ -4,3 +4,8 @@ export interface Tokens {
   accessToken: string
   refreshToken: TokenInsertSchema
 }
+
+export interface JwtPayload {
+  sub: string
+  role: string
+}
