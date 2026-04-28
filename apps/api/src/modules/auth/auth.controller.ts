@@ -13,6 +13,7 @@ import { Tokens } from "./auth.interfaces"
 import { AuthService } from "./auth.service"
 import { LoginDto, RegisterDto } from "./dto/auth.dto"
 import { EnvService } from "../../core/env/env.service"
+import { UserAgent } from "../../shared/decorators/user-agent.decorator"
 
 @Controller("auth")
 export class AuthController {
@@ -29,8 +30,12 @@ export class AuthController {
   }
 
   @Post("login")
-  async login(@Body() dto: LoginDto, @Res() res: Response) {
-    const tokens = await this.authService.login(dto)
+  async login(
+    @Body() dto: LoginDto,
+    @Res() res: Response,
+    @UserAgent() agent: string
+  ) {
+    const tokens = await this.authService.login(dto, agent)
 
     this.setRefreshTokenToCookies(tokens, res)
 
@@ -38,12 +43,16 @@ export class AuthController {
   }
 
   @Post("refresh")
-  async refreshToken(@Req() req: Request, @Res() res: Response) {
+  async refreshToken(
+    @Req() req: Request,
+    @Res() res: Response,
+    @UserAgent() agent: string
+  ) {
     const refreshToken = req.cookies[this.envServie.refreshTokenCookieKey]
 
     if (!refreshToken) throw new UnauthorizedException()
 
-    const tokens = await this.authService.refreshTokens(refreshToken)
+    const tokens = await this.authService.refreshTokens(refreshToken, agent)
 
     this.setRefreshTokenToCookies(tokens, res)
 

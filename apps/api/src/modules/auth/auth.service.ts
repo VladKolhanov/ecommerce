@@ -37,7 +37,7 @@ export class AuthService {
     return createdUser
   }
 
-  async login(userInput: LoginDto): Promise<Tokens> {
+  async login(userInput: LoginDto, agent: string): Promise<Tokens> {
     const user = await this.userService.findByEmail({
       email: userInput.email,
     })
@@ -52,13 +52,18 @@ export class AuthService {
     if (!isPasswordsVerified)
       throw new UnauthorizedException("Invalid credentials")
 
-    return this.generateTokens(user)
+    return this.generateTokens(user, agent)
   }
 
-  async refreshTokens(refreshToken: string): Promise<Tokens> {
+  async refreshTokens(refreshToken: string, agent: string): Promise<Tokens> {
     const token = await this.authRepository.getRefreshToken(refreshToken)
 
     if (!token) throw new UnauthorizedException()
+
+    if (new Date(token.expires) < new Date()) {
+      await this.authRepository.deleteRefreshToken(refreshToken)
+      throw new UnauthorizedException()
+    }
 
     await this.authRepository.deleteRefreshToken(refreshToken)
 
@@ -66,7 +71,7 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException()
 
-    return this.generateTokens(user)
+    return this.generateTokens(user, agent)
   }
 
   private hashPassword(password: string) {
@@ -81,13 +86,16 @@ export class AuthService {
     return this.jwtService.signAsync(payload)
   }
 
-  private async generateTokens(user: UserSelectSchema) {
+  private async generateTokens(user: UserSelectSchema, agent: string) {
     const accessToken = await this.signJwt({
       sub: user.id,
       role: user.role,
     })
 
-    const [refreshToken] = await this.authRepository.createRefreshToken(user.id)
+    const [refreshToken] = await this.authRepository.createRefreshToken(
+      user.id,
+      agent
+    )
 
     return { accessToken: `Bearer ${accessToken}`, refreshToken }
   }

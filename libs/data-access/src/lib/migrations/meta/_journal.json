@@ -15,6 +15,20 @@
       "when": 1776955026952,
       "tag": "0001_timestamps-to-token",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777360656217,
+      "tag": "0002_user_agent",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777365318060,
+      "tag": "0003_uniqu-user-device",
+      "breakpoints": true
     }
   ]
 }

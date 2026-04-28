@@ -3,6 +3,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "dev:api": "nx run apps/api:serve",
+    "dev:shop": "nx run apps/shop:serve",
+    "dev:admin": "nx run apps/admin:serve",
+    "db:generate": "nx run libs/data-access:generate",
+    "db:migrate": "nx run libs/data-access:migrate",
+    "db:push": "nx run libs/data-access:push",
+    "db:studio": "nx run libs/data-access:studio",
     "docker:up": "docker compose --env-file docker/.env.docker.development -f docker/compose.yaml --project-directory . up -d",
     "docker:down": "docker compose -f docker/compose.yaml --project-directory . down",
     "prepare": "husky"

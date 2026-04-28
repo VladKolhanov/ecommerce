@@ -1,0 +1,1 @@
+ALTER TABLE "tokens" ADD CONSTRAINT "tokens_user_id_user_agent_unique" UNIQUE("user_id","user_agent");

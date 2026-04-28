@@ -25,10 +25,23 @@ export class AuthRepository {
     return this.db.insert(userTable).values(user).returning()
   }
 
-  async createRefreshToken(userId: TokenInsertSchema["userId"]) {
-    const token = this.generateRefreshToken(userId)
+  async createRefreshToken(
+    userId: TokenInsertSchema["userId"],
+    agent: TokenInsertSchema["userAgent"]
+  ) {
+    const token = this.generateRefreshToken(userId, agent)
 
-    return await this.db.insert(tokenTable).values(token).returning()
+    return await this.db
+      .insert(tokenTable)
+      .values(token)
+      .onConflictDoUpdate({
+        target: [tokenTable.userId, tokenTable.userAgent],
+        set: {
+          token: token.token,
+          expires: token.expires,
+        },
+      })
+      .returning()
   }
 
   async getRefreshToken(refreshToken: TokenSelectSchema["token"]) {
@@ -43,11 +56,15 @@ export class AuthRepository {
       .where(eq(tokenTable.token, refreshToken))
   }
 
-  private generateRefreshToken(userId: TokenInsertSchema["userId"]) {
+  private generateRefreshToken(
+    userId: TokenInsertSchema["userId"],
+    agent: TokenInsertSchema["userAgent"]
+  ): TokenInsertSchema {
     return {
       token: v4(),
       expires: add(new Date(), { days: this.envService.refreshTokenExpire }),
       userId,
+      userAgent: agent,
     }
   }
 }
