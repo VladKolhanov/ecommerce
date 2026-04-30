@@ -4,6 +4,7 @@ import {
   TokenSelectSchema,
   tokenTable,
   UserInsertSchema,
+  UserResponseSchema,
   userTable,
 } from "@ecommerce/data-access"
 import { Injectable } from "@nestjs/common"
@@ -21,8 +22,14 @@ export class AuthRepository {
     private readonly envService: EnvService
   ) {}
 
-  async register(user: Pick<UserInsertSchema, "email" | "password">) {
-    return this.db.insert(userTable).values(user).returning()
+  async register(
+    user: Pick<UserInsertSchema, "email" | "password">
+  ): Promise<UserResponseSchema[]> {
+    return await this.db.insert(userTable).values(user).returning({
+      id: userTable.id,
+      email: userTable.email,
+      role: userTable.role,
+    })
   }
 
   async createRefreshToken(

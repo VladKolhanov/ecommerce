@@ -1,6 +1,6 @@
 import {
   DB,
-  UserInsertSchema,
+  UserResponseSchema,
   UserSelectSchema,
   userTable,
 } from "@ecommerce/data-access"
@@ -13,23 +13,43 @@ import { InjectDb } from "../../core/db/db.provider"
 export class UserRepository {
   constructor(@InjectDb() private readonly db: DB) {}
 
-  async create(user: Pick<UserInsertSchema, "email" | "password">) {
-    return this.db.insert(userTable).values(user).returning()
-  }
-
-  async findOneById(id: UserSelectSchema["id"]) {
-    return this.db.query.userTable.findFirst({
+  async findOneById(
+    id: UserSelectSchema["id"]
+  ): Promise<UserResponseSchema | undefined> {
+    return await this.db.query.userTable.findFirst({
       where: (user, { eq }) => eq(user.id, id),
+      columns: { id: true, email: true, role: true },
     })
   }
 
-  async findOneByEmail(email: UserSelectSchema["email"]) {
-    return this.db.query.userTable.findFirst({
+  async findOneByEmail(
+    email: UserSelectSchema["email"]
+  ): Promise<UserResponseSchema | undefined> {
+    return await this.db.query.userTable.findFirst({
       where: (user, { eq }) => eq(user.email, email),
+      columns: { id: true, email: true, role: true },
     })
   }
 
-  async deleteOne(id: UserSelectSchema["id"]) {
-    return this.db.delete(userTable).where(eq(userTable.id, id)).returning()
+  async findOneByEmailWithPassword(
+    email: UserSelectSchema["email"]
+  ): Promise<
+    (UserResponseSchema & Pick<UserSelectSchema, "password">) | undefined
+  > {
+    return await this.db.query.userTable.findFirst({
+      where: (user, { eq }) => eq(user.email, email),
+      columns: { id: true, email: true, role: true, password: true },
+    })
+  }
+
+  async deleteOne(id: UserSelectSchema["id"]): Promise<UserResponseSchema[]> {
+    return await this.db
+      .delete(userTable)
+      .where(eq(userTable.id, id))
+      .returning({
+        id: userTable.id,
+        email: userTable.email,
+        role: userTable.role,
+      })
   }
 }

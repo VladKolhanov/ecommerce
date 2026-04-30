@@ -1,4 +1,4 @@
-import { UserSelectSchema } from "@ecommerce/data-access"
+import { UserResponseSchema } from "@ecommerce/data-access"
 import {
   ConflictException,
   Injectable,
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   async login(userInput: LoginDto, agent: string): Promise<Tokens> {
-    const user = await this.userService.findByEmail({
+    const user = await this.userService.findByEmailWithPassword({
       email: userInput.email,
     })
 
@@ -86,7 +86,7 @@ export class AuthService {
     return this.jwtService.signAsync(payload)
   }
 
-  private async generateTokens(user: UserSelectSchema, agent: string) {
+  private async generateTokens(user: UserResponseSchema, agent: string) {
     const accessTokenPayload = {
       sub: user.id,
       role: user.role,

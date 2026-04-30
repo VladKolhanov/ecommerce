@@ -1,4 +1,4 @@
-import { userInsertSchema } from "@ecommerce/data-access"
+import { userInsertSchema, userResponseSchema } from "@ecommerce/data-access"
 import { zEmail, zPassword } from "@ecommerce/utils"
 import { createZodDto } from "nestjs-zod"
 import z from "zod"
@@ -16,6 +16,8 @@ export class RegisterDto extends createZodDto(
       path: ["confirmPassword"],
     })
 ) {}
+
+export class RegisterResponseDto extends createZodDto(userResponseSchema) {}
 
 export class LoginDto extends createZodDto(
   userInsertSchema.pick({ email: true, password: true }).extend({

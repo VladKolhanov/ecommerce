@@ -8,10 +8,11 @@ import {
   UnauthorizedException,
 } from "@nestjs/common"
 import { type Request, type Response } from "express"
+import { ZodSerializerDto } from "nestjs-zod"
 
 import { Tokens } from "./auth.interfaces"
 import { AuthService } from "./auth.service"
-import { LoginDto, RegisterDto } from "./dto/auth.dto"
+import { LoginDto, RegisterDto, RegisterResponseDto } from "./dto/auth.dto"
 import { EnvService } from "../../core/env/env.service"
 import { Public } from "../../shared/decorators/public.decorator"
 import { UserAgent } from "../../shared/decorators/user-agent.decorator"
@@ -26,6 +27,7 @@ export class AuthController {
 
   refreshTokenKey = this.envServie.refreshTokenCookieKey
 
+  @ZodSerializerDto(RegisterResponseDto)
   @Post("register")
   async register(@Body() dto: RegisterDto) {
     return this.authService.register(dto)
