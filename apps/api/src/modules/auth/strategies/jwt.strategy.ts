@@ -4,8 +4,8 @@ import { Logger } from "nestjs-pino"
 import { ExtractJwt, Strategy } from "passport-jwt"
 
 import { EnvService } from "../../../core/env/env.service"
+import { JwtPayload } from "../../../core/interfaces"
 import { UserService } from "../../user/user.service"
-import { JwtPayload } from "../auth.interfaces"
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

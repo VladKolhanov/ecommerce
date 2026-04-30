@@ -8,6 +8,8 @@ import {
   UserResponseDto,
 } from "./dto/user.dto"
 import { UserService } from "./user.service"
+import { JwtPayload } from "../../core/interfaces"
+import { CurrentUser } from "../../shared/decorators/current-user.decorator"
 
 @Controller("user")
 export class UserController {
@@ -27,7 +29,10 @@ export class UserController {
 
   @ZodSerializerDto(UserResponseDto)
   @Delete(":id")
-  async deleteUser(@Param() dto: DeleteUserDto) {
-    return this.userService.delete(dto)
+  async deleteUser(
+    @Param() dto: DeleteUserDto,
+    @CurrentUser() user: JwtPayload
+  ) {
+    return this.userService.delete(dto, user)
   }
 }

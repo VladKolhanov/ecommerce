@@ -1,4 +1,4 @@
-import { type TokenInsertSchema } from "@ecommerce/data-access"
+import type { TokenInsertSchema, UserRoles } from "@ecommerce/data-access"
 
 export interface Tokens {
   accessToken: string
@@ -7,5 +7,5 @@ export interface Tokens {
 
 export interface JwtPayload {
   sub: string
-  role: string
+  role: UserRoles
 }

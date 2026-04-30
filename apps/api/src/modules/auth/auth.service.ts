@@ -7,9 +7,10 @@ import {
 import { JwtService } from "@nestjs/jwt"
 import argon2 from "argon2"
 
-import { JwtPayload, Tokens } from "./auth.interfaces"
 import { AuthRepository } from "./auth.repository"
 import { LoginDto, RegisterDto } from "./dto/auth.dto"
+import { HTTP_ERROR_MESSAGES } from "../../core/exceptions/messages.constant"
+import { JwtPayload, Tokens } from "../../core/interfaces"
 import { UserService } from "../user/user.service"
 
 @Injectable()
@@ -25,7 +26,8 @@ export class AuthService {
       email: userInput.email,
     }))
 
-    if (isUserExist) throw new ConflictException("Invalid credentials")
+    if (isUserExist)
+      throw new ConflictException(HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS)
 
     const hashedPassword = await this.hashPassword(userInput.password)
 
@@ -42,7 +44,10 @@ export class AuthService {
       email: userInput.email,
     })
 
-    if (!user) throw new UnauthorizedException("Invalid credentials")
+    if (!user)
+      throw new UnauthorizedException(
+        HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS
+      )
 
     const isPasswordsVerified = await this.verifyPassword(
       user.password,
@@ -50,7 +55,9 @@ export class AuthService {
     )
 
     if (!isPasswordsVerified)
-      throw new UnauthorizedException("Invalid credentials")
+      throw new UnauthorizedException(
+        HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS
+      )
 
     return this.generateTokens(user, agent)
   }
