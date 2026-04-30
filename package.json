@@ -10,6 +10,7 @@
     "db:migrate": "nx run libs/data-access:migrate",
     "db:push": "nx run libs/data-access:push",
     "db:studio": "nx run libs/data-access:studio",
+    "db:seed": "nx run libs/data-access:seed",
     "docker:up": "docker compose --env-file docker/.env.docker.development -f docker/compose.yaml --project-directory . up -d",
     "docker:down": "docker compose -f docker/compose.yaml --project-directory . down",
     "prepare": "husky"
@@ -55,6 +56,7 @@
     "react-dom": "^19.2.4",
     "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.2",
+    "tsx": "^4.21.0",
     "uuid": "^14.0.0",
     "zod": "^4.3.6"
   },

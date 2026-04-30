@@ -42,6 +42,13 @@
         "command": "drizzle-kit studio --config=drizzle.config.ts --port=5555",
         "cwd": "libs/data-access"
       }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx src/lib/seed.ts",
+        "cwd": "libs/data-access"
+      }
     }
   }
 }
