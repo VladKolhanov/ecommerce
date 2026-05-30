@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param } from "@nestjs/common"
+import { Controller, Delete, Get, Param, UseGuards } from "@nestjs/common"
 import { ZodSerializerDto } from "nestjs-zod"
 
 import {
@@ -10,6 +10,8 @@ import {
 import { UserService } from "./user.service"
 import { JwtPayload } from "../../core/interfaces"
 import { CurrentUser } from "../../shared/decorators/current-user.decorator"
+import { Roles } from "../../shared/decorators/roles.decorator"
+import { RolesGuard } from "../auth/guards/role.guard"
 
 @Controller("user")
 export class UserController {
@@ -34,5 +36,12 @@ export class UserController {
     @CurrentUser() user: JwtPayload
   ) {
     return this.userService.delete(dto, user)
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles("admin")
+  @Get("me")
+  me(@CurrentUser() user: JwtPayload) {
+    return user
   }
 }
