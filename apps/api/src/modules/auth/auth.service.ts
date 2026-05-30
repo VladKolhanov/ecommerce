@@ -81,6 +81,10 @@ export class AuthService {
     return this.generateTokens(user, agent)
   }
 
+  async deleteRefreshToken(token: string) {
+    return await this.authRepository.deleteRefreshToken(token)
+  }
+
   private hashPassword(password: string) {
     return argon2.hash(password)
   }

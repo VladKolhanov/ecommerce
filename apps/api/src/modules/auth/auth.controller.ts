@@ -46,13 +46,37 @@ export class AuthController {
     res.status(HttpStatus.CREATED).json({ accessToken: tokens.accessToken })
   }
 
+  @Post("logout")
+  async logout(@Req() req: Request, @Res() res: Response) {
+    const refreshToken = req.cookies[
+      this.envServie.refreshTokenCookieKey
+    ] as string
+
+    if (!refreshToken) {
+      res.sendStatus(HttpStatus.OK)
+      return
+    }
+
+    await this.authService.deleteRefreshToken(refreshToken)
+
+    res.cookie(this.envServie.refreshTokenCookieKey, "", {
+      httpOnly: true,
+      secure: true,
+      expires: new Date(),
+    })
+
+    res.sendStatus(HttpStatus.OK)
+  }
+
   @Post("refresh")
   async refreshToken(
     @Req() req: Request,
     @Res() res: Response,
     @UserAgent() agent: string
   ) {
-    const refreshToken = req.cookies[this.envServie.refreshTokenCookieKey]
+    const refreshToken = req.cookies[
+      this.envServie.refreshTokenCookieKey
+    ] as string
 
     if (!refreshToken) throw new UnauthorizedException()
 

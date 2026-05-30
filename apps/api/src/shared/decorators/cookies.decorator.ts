@@ -6,6 +6,8 @@ export const Cookie = createParamDecorator(
 
     return key && key in request.cookies
       ? request.cookies[key]
-      : request.cookies
+      : key
+        ? null
+        : request.cookies
   }
 )
