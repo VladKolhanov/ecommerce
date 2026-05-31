@@ -2,7 +2,7 @@ import { UserRoles } from "@ecommerce/data-access"
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
 
-import { ROLES_KEY } from "../../../shared/constants"
+import { MetadataKeys } from "../../../shared/constants"
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -10,7 +10,7 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<UserRoles[]>(
-      ROLES_KEY,
+      MetadataKeys.ROLE_KEY,
       [context.getHandler(), context.getClass()]
     )
 
@@ -21,6 +21,6 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest()
 
-    return requiredRoles.includes(user.role)
+    return requiredRoles.length ? requiredRoles.includes(user.role) : true
   }
 }

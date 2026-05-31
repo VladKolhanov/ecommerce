@@ -4,7 +4,7 @@ import { Logger } from "nestjs-pino"
 import { ExtractJwt, Strategy } from "passport-jwt"
 
 import { EnvService } from "../../../core/env/env.service"
-import { JwtPayload } from "../../../core/interfaces"
+import { JwtPayload } from "../../../shared/interfaces"
 import { UserService } from "../../user/user.service"
 
 @Injectable()

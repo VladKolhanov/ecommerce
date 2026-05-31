@@ -3,9 +3,9 @@ import { NestFactory } from "@nestjs/core"
 import cookieParser from "cookie-parser"
 import { Logger } from "nestjs-pino"
 
-import { AppModule } from "./app.module"
 import { EnvService } from "./core/env/env.service"
 import { setupSwagger } from "./core/swagger/setup-swagger"
+import { AppModule } from "./modules/app.module"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true })
@@ -24,6 +24,7 @@ async function bootstrap() {
     type: VersioningType.URI,
   })
   app.enableShutdownHooks()
+
   setupSwagger(app)
 
   await app.listen(port)

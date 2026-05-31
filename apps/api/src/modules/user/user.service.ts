@@ -6,7 +6,7 @@ import {
   FindOneUserByIdDto,
 } from "./dto/user.dto"
 import { UserRepository } from "./user.repository"
-import { JwtPayload } from "../../core/interfaces"
+import { JwtPayload } from "../../shared/interfaces"
 
 @Injectable()
 export class UserService {
@@ -24,8 +24,8 @@ export class UserService {
     return await this.userRepository.findOneByEmailWithPassword(email)
   }
 
-  async delete({ id }: DeleteUserDto, user: JwtPayload) {
-    if (user.sub !== id && user.role !== "admin") {
+  async delete({ id }: DeleteUserDto, jwtPayload: JwtPayload) {
+    if (jwtPayload.sub !== id && jwtPayload.role !== "admin") {
       throw new ForbiddenException()
     }
 

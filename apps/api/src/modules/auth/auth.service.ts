@@ -10,7 +10,7 @@ import argon2 from "argon2"
 import { AuthRepository } from "./auth.repository"
 import { LoginDto, RegisterDto } from "./dto/auth.dto"
 import { HTTP_ERROR_MESSAGES } from "../../core/exceptions/messages.constant"
-import { JwtPayload, Tokens } from "../../core/interfaces"
+import { JwtPayload, Tokens } from "../../shared/interfaces"
 import { UserService } from "../user/user.service"
 
 @Injectable()
@@ -62,7 +62,7 @@ export class AuthService {
     return this.generateTokens(user, agent)
   }
 
-  async refreshTokens(refreshToken: string, agent: string): Promise<Tokens> {
+  async getTokensPair(refreshToken: string, agent: string): Promise<Tokens> {
     const token = await this.authRepository.getRefreshToken(refreshToken)
 
     if (!token) throw new UnauthorizedException()

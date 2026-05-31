@@ -11,21 +11,20 @@ import { type Request, type Response } from "express"
 import { ZodSerializerDto } from "nestjs-zod"
 
 import { AuthService } from "./auth.service"
+import { Protected } from "./decorators/protected.decorator"
 import { LoginDto, RegisterDto, RegisterResponseDto } from "./dto/auth.dto"
 import { EnvService } from "../../core/env/env.service"
-import { Tokens } from "../../core/interfaces"
-import { Public } from "../../shared/decorators/public.decorator"
 import { UserAgent } from "../../shared/decorators/user-agent.decorator"
+import { Tokens } from "../../shared/interfaces"
 
-@Public()
 @Controller("auth")
 export class AuthController {
+  refreshTokenKey = this.envServie.refreshTokenCookieKey
+
   constructor(
     private readonly authService: AuthService,
     private readonly envServie: EnvService
   ) {}
-
-  refreshTokenKey = this.envServie.refreshTokenCookieKey
 
   @ZodSerializerDto(RegisterResponseDto)
   @Post("register")
@@ -47,6 +46,7 @@ export class AuthController {
   }
 
   @Post("logout")
+  @Protected()
   async logout(@Req() req: Request, @Res() res: Response) {
     const refreshToken = req.cookies[
       this.envServie.refreshTokenCookieKey
@@ -80,7 +80,7 @@ export class AuthController {
 
     if (!refreshToken) throw new UnauthorizedException()
 
-    const tokens = await this.authService.refreshTokens(refreshToken, agent)
+    const tokens = await this.authService.getTokensPair(refreshToken, agent)
 
     this.setRefreshTokenToCookies(tokens, res)
 

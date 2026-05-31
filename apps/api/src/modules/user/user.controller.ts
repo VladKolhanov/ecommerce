@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, UseGuards } from "@nestjs/common"
+import { Controller, Delete, Get, Param } from "@nestjs/common"
 import { ZodSerializerDto } from "nestjs-zod"
 
 import {
@@ -8,12 +8,12 @@ import {
   UserResponseDto,
 } from "./dto/user.dto"
 import { UserService } from "./user.service"
-import { JwtPayload } from "../../core/interfaces"
-import { CurrentUser } from "../../shared/decorators/current-user.decorator"
-import { Roles } from "../../shared/decorators/roles.decorator"
-import { RolesGuard } from "../auth/guards/role.guard"
+import { JwtPayload } from "../../shared/decorators/jwt-payload.decorator"
+import { type JwtPayload as JwtPayloadType } from "../../shared/interfaces"
+import { Protected } from "../auth/decorators/protected.decorator"
 
 @Controller("user")
+@Protected()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -33,15 +33,8 @@ export class UserController {
   @Delete(":id")
   async deleteUser(
     @Param() dto: DeleteUserDto,
-    @CurrentUser() user: JwtPayload
+    @JwtPayload() jwtPayload: JwtPayloadType
   ) {
-    return this.userService.delete(dto, user)
-  }
-
-  @UseGuards(RolesGuard)
-  @Roles("admin")
-  @Get("me")
-  me(@CurrentUser() user: JwtPayload) {
-    return user
+    return this.userService.delete(dto, jwtPayload)
   }
 }
