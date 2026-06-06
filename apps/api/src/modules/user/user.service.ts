@@ -1,36 +1,51 @@
-import { ForbiddenException, Injectable } from "@nestjs/common"
-
 import {
-  DeleteUserDto,
-  FindOneUserByEmailDto,
-  FindOneUserByIdDto,
-} from "./dto/user.dto"
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
+
 import { UserRepository } from "./user.repository"
-import { JwtPayload } from "../../shared/interfaces"
+import { ErrorMessages } from "../../core/exceptions"
+import { JwtAuthPayload } from "../../shared/types"
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async findById({ id }: FindOneUserByIdDto) {
-    return await this.userRepository.findOneById(id)
+  async findById<T extends boolean = false>(
+    id: string,
+    options?: { isSensitive?: T }
+  ) {
+    const user = await this.userRepository.findOneById(id, options?.isSensitive)
+
+    if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+    return user
   }
 
-  async findByEmail({ email }: FindOneUserByEmailDto) {
-    return await this.userRepository.findOneByEmail(email)
+  async findByEmail<T extends boolean = false>(
+    email: string,
+    options?: { isSensitive?: T }
+  ) {
+    const user = await this.userRepository.findOneByEmail(
+      email,
+      options?.isSensitive
+    )
+
+    if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+
+    return user
   }
 
-  async findByEmailWithPassword({ email }: FindOneUserByEmailDto) {
-    return await this.userRepository.findOneByEmailWithPassword(email)
-  }
-
-  async delete({ id }: DeleteUserDto, jwtPayload: JwtPayload) {
+  async delete(id: string, jwtPayload: JwtAuthPayload) {
     if (jwtPayload.sub !== id && jwtPayload.role !== "admin") {
       throw new ForbiddenException()
     }
 
-    const [deletedUser] = await this.userRepository.deleteOne(id)
+    const isDeleted = await this.userRepository.deleteOne(id)
 
-    return deletedUser
+    if (!isDeleted) {
+      throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+    }
   }
 }

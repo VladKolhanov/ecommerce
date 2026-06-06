@@ -1,6 +1,6 @@
 import { createParamDecorator, type ExecutionContext } from "@nestjs/common"
 
-import type { JwtPayload as JwtPayloadType } from "../interfaces"
+import type { JwtAuthPayload as JwtPayloadType } from "../../../shared/types"
 
 export const JwtPayload = createParamDecorator(
   (

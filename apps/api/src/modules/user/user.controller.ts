@@ -1,15 +1,19 @@
-import { Controller, Delete, Get, Param } from "@nestjs/common"
+import {
+  type DeleteResponse,
+  DeleteResponseDto,
+  FindFirstByEmailInputDto,
+  type FindFirstByEmailResponse,
+  FindFirstByEmailResponseDto,
+  type FindFirstByIdResponse,
+  FindFirstByIdResponseDto,
+} from "@ecommerce/data-access"
+import { Body, Controller, Delete, Get, Param } from "@nestjs/common"
 import { ZodSerializerDto } from "nestjs-zod"
 
-import {
-  DeleteUserDto,
-  FindOneUserByEmailDto,
-  FindOneUserByIdDto,
-  UserResponseDto,
-} from "./dto/user.dto"
 import { UserService } from "./user.service"
-import { JwtPayload } from "../../shared/decorators/jwt-payload.decorator"
-import { type JwtPayload as JwtPayloadType } from "../../shared/interfaces"
+import { Roles } from "../../shared/constants"
+import { type JwtAuthPayload as JwtPayloadType } from "../../shared/types"
+import { JwtPayload } from "../auth/decorators/jwt-payload.decorator"
 import { Protected } from "../auth/decorators/protected.decorator"
 
 @Controller("user")
@@ -17,24 +21,31 @@ import { Protected } from "../auth/decorators/protected.decorator"
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ZodSerializerDto(UserResponseDto)
-  @Get("id/:id")
-  async findOneUserById(@Param() dto: FindOneUserByIdDto) {
-    return this.userService.findById(dto)
+  @ZodSerializerDto(FindFirstByIdResponseDto)
+  @Get("id")
+  @Protected(Roles.ADMIN)
+  async findFirstById(@Param() id: string): Promise<FindFirstByIdResponse> {
+    return await this.userService.findById(id)
   }
 
-  @ZodSerializerDto(UserResponseDto)
-  @Get("email/:email")
-  async findOneUserByEmail(@Param() dto: FindOneUserByEmailDto) {
-    return this.userService.findByEmail(dto)
+  @ZodSerializerDto(FindFirstByEmailResponseDto)
+  @Get("email")
+  @Protected(Roles.ADMIN)
+  async findFirstByEmail(
+    @Body() dto: FindFirstByEmailInputDto
+  ): Promise<FindFirstByEmailResponse> {
+    return await this.userService.findByEmail(dto.email)
   }
 
-  @ZodSerializerDto(UserResponseDto)
+  @ZodSerializerDto(DeleteResponseDto)
   @Delete(":id")
-  async deleteUser(
-    @Param() dto: DeleteUserDto,
+  @Protected()
+  async delete(
+    @Param() id: string,
     @JwtPayload() jwtPayload: JwtPayloadType
-  ) {
-    return this.userService.delete(dto, jwtPayload)
+  ): Promise<DeleteResponse> {
+    await this.userService.delete(id, jwtPayload)
+
+    return { success: true }
   }
 }

@@ -1,18 +1,17 @@
+import { tryCatch } from "@ecommerce/utils"
 import { Injectable, UnauthorizedException } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
-import { Logger } from "nestjs-pino"
 import { ExtractJwt, Strategy } from "passport-jwt"
 
 import { EnvService } from "../../../core/env/env.service"
-import { JwtPayload } from "../../../shared/interfaces"
+import { JwtAuthPayload } from "../../../shared/types"
 import { UserService } from "../../user/user.service"
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly envService: EnvService,
-    private readonly userService: UserService,
-    private readonly logger: Logger
+    private readonly userService: UserService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -21,8 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(payload: JwtPayload) {
-    const user = await this.userService.findById({ id: payload.sub })
+  async validate(payload: JwtAuthPayload) {
+    const [user] = await tryCatch(this.userService.findById(payload.sub))
 
     if (!user) throw new UnauthorizedException()
 

@@ -29,6 +29,27 @@
       "when": 1777365318060,
       "tag": "0003_uniqu-user-device",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1780233169393,
+      "tag": "0004_mfa",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780324961133,
+      "tag": "0005_two-factor-names",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780586275272,
+      "tag": "0006_fix-isTwoFactorEnabled",
+      "breakpoints": true
     }
   ]
 }

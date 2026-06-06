@@ -40,8 +40,18 @@ export class EnvService {
     return this.configService.get("LOGTAIL_HOST", { infer: true })
   }
 
+  get encryptionSecret() {
+    return this.configService.getOrThrow("ENCRYPTION_SECRET", { infer: true })
+  }
+
   get jwtSecret() {
     return this.configService.getOrThrow("JWT_SECRET", { infer: true })
+  }
+
+  get jwtTwoFactorSecret() {
+    return this.configService.getOrThrow("JWT_TWO_FACTOR_SECRET", {
+      infer: true,
+    })
   }
 
   get jwtTokenExpire() {

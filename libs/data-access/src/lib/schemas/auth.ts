@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm"
 import {
+  boolean,
   pgEnum,
   pgTable,
   timestamp,
@@ -15,6 +16,8 @@ export const rolesEnum = pgEnum("roles", ["user", "manager", "admin"])
 export const userTable = pgTable("users", {
   id: uuid().defaultRandom().primaryKey(),
   email: varchar("email").notNull().unique(),
+  isTwoFactorEnabled: boolean("is_two_factor_enabled").notNull().default(false),
+  twoFactorSecretKey: varchar("two_factor_secret_key"),
   password: varchar("password").notNull(),
   role: rolesEnum("role").default("user").notNull(),
   ...timestamps,

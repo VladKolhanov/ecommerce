@@ -20,6 +20,7 @@ export class AppException extends HttpException {
 
   constructor(options: AppExceptionOptions) {
     const message =
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       options.message || ErrorMessages[options.code] || "Unknown error"
     const status = options.status || HttpStatus.BAD_REQUEST
 

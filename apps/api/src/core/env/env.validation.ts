@@ -13,6 +13,8 @@ const envSchema = z.object({
   API_VERSION: zStringRequired(),
   LOGTAIL_TOKEN: zStringOptional(),
   LOGTAIL_HOST: zStringOptional(),
+  ENCRYPTION_SECRET: zStringRequired(),
+  JWT_TWO_FACTOR_SECRET: zStringRequired(),
   JWT_SECRET: zStringRequired(),
   JWT_TOKEN_EXPIRE: z.coerce.number(),
   REFRESH_TOKEN_EXPIRE: z.coerce.number(),
