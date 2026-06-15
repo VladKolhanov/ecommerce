@@ -1,15 +1,14 @@
 import type { LoginInput, RegisterInput } from "@ecommerce/data-access"
 import { tryCatch } from "@ecommerce/utils"
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import argon2 from "argon2"
 
 import { TokensService } from "./tokens.service"
 import { TwoFactorService } from "./two-factor.service"
-import { HTTP_ERROR_MESSAGES } from "../../../core/exceptions/messages.constant"
+import {
+  AuthAccessDeniedException,
+  AuthInvalidCredentialsException,
+} from "../../../core/exceptions/domain.exception"
 import { AppSourceType, JwtTwoFactorPayload } from "../../../shared/types"
 import { UserService } from "../../user/user.service"
 import { AuthRepository } from "../repositories/auth.repository"
@@ -26,9 +25,7 @@ export class AuthService {
   async register(userInput: RegisterInput, agent: string) {
     const [user] = await tryCatch(this.userService.findByEmail(userInput.email))
 
-    if (!user) {
-      throw new ConflictException(HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS)
-    }
+    if (user) throw new AuthInvalidCredentialsException()
 
     const hashedPassword = await this.hashPassword(userInput.password)
 
@@ -50,20 +47,14 @@ export class AuthService {
       })
     )
 
-    if (!user)
-      throw new UnauthorizedException(
-        HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS
-      )
+    if (!user) throw new AuthInvalidCredentialsException()
 
     const isPasswordsVerified = await this.verifyPassword(
       user.password,
       userInput.password
     )
 
-    if (!isPasswordsVerified)
-      throw new UnauthorizedException(
-        HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS
-      )
+    if (!isPasswordsVerified) throw new AuthInvalidCredentialsException()
 
     if (source === "shop") {
       return await this.tokensService.generateAuthTokens(
@@ -71,10 +62,7 @@ export class AuthService {
         agent
       )
     } else {
-      if (user.role !== "admin")
-        throw new UnauthorizedException(
-          HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS
-        )
+      if (user.role !== "admin") throw new AuthAccessDeniedException()
 
       const token = await this.tokensService.generateTwoFactorToken({
         sub: user.id,
@@ -94,10 +82,7 @@ export class AuthService {
       })
     )
 
-    if (!user)
-      throw new UnauthorizedException(
-        HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS
-      )
+    if (!user) throw new AuthInvalidCredentialsException()
 
     if (!user.isTwoFactorEnabled) {
       const qrcodeUri = await this.twoFactorService.generateQrcode(user.id)

@@ -42,13 +42,13 @@ import type { AppSourceType, JwtTwoFactorPayload } from "../../shared/types"
 
 @Controller("auth")
 export class AuthController {
-  refreshTokenKey = this.envServie.refreshTokenCookieKey
+  refreshTokenKey = this.envService.refreshTokenCookieKey
 
   constructor(
     private readonly authService: AuthService,
     private readonly tokenService: TokensService,
     private readonly twoFactorService: TwoFactorService,
-    private readonly envServie: EnvService
+    private readonly envService: EnvService
   ) {}
 
   @ZodSerializerDto(RegisterResponseDto)
@@ -91,7 +91,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ): Promise<LogoutResponse> {
     const refreshToken = req.cookies[
-      this.envServie.refreshTokenCookieKey
+      this.envService.refreshTokenCookieKey
     ] as string
 
     if (!refreshToken) {
@@ -113,7 +113,7 @@ export class AuthController {
     @UserAgent() agent: string
   ): Promise<RefreshTokenResponse> {
     const refreshToken = req.cookies[
-      this.envServie.refreshTokenCookieKey
+      this.envService.refreshTokenCookieKey
     ] as string
 
     if (!refreshToken) throw new UnauthorizedException()
@@ -159,21 +159,21 @@ export class AuthController {
     refreshToken: RefreshTokenInsert,
     res: Response
   ) {
-    res.cookie(this.envServie.refreshTokenCookieKey, refreshToken.token, {
+    res.cookie(this.envService.refreshTokenCookieKey, refreshToken.token, {
       httpOnly: true,
       sameSite: "lax",
       expires: new Date(refreshToken.expires),
-      secure: !this.envServie.isDev,
+      secure: !this.envService.isDev,
       path: "/",
     })
   }
 
   private deleteRefreshTokenFromCookies(res: Response) {
-    res.cookie(this.envServie.refreshTokenCookieKey, "", {
+    res.cookie(this.envService.refreshTokenCookieKey, "", {
       httpOnly: true,
       sameSite: "lax",
       expires: new Date(0),
-      secure: !this.envServie.isDev,
+      secure: !this.envService.isDev,
       path: "/",
     })
   }

@@ -84,6 +84,7 @@ import { EnvService } from "../env/env.service"
                 method: req.method,
                 url: req.url,
                 query: req.query,
+                userAgent: req.headers["user-agent"],
               }),
               res: (res) => ({
                 statusCode: res.statusCode,

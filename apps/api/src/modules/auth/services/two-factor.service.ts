@@ -1,12 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { generateSecret, verify } from "otplib"
 import QRCode from "qrcode"
 
-import { HTTP_ERROR_MESSAGES } from "../../../core/exceptions/messages.constant"
+import { AuthTOTPFailedException } from "../../../core/exceptions/domain.exception"
 import { EncryptionService } from "../../../shared/services/encryption/encryption.service"
 import { TwoFactorRepository } from "../repositories/two-factor.repository"
 
@@ -31,22 +27,17 @@ export class TwoFactorService {
   async verifyTOTPCode(id: string, code: string): Promise<boolean> {
     const twoFactorState = await this.twoFactorRepository.getTwoFactorState(id)
 
-    if (!twoFactorState)
-      throw new UnauthorizedException(
-        HTTP_ERROR_MESSAGES.AUTH_INVALID_CREDENTIALS
-      )
+    if (!twoFactorState) throw new AuthTOTPFailedException()
 
     const { isTwoFactorEnabled, twoFactorSecretKey } = twoFactorState
 
-    if (!twoFactorSecretKey)
-      throw new BadRequestException(HTTP_ERROR_MESSAGES.AUTH_TFA_IS_NOT_SET_UP)
+    if (!twoFactorSecretKey) throw new AuthTOTPFailedException()
 
     const secret = this.encryptionService.decrypt(twoFactorSecretKey)
 
     const isValid = (await verify({ token: code, secret })).valid
 
-    if (!isValid)
-      throw new UnauthorizedException(HTTP_ERROR_MESSAGES.AUTH_INVALID_TFA)
+    if (!isValid) throw new AuthTOTPFailedException()
 
     if (!isTwoFactorEnabled) {
       await this.twoFactorRepository.updateTwoFactorState(id)

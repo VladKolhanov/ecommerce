@@ -1,11 +1,7 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common"
+import { ForbiddenException, Injectable } from "@nestjs/common"
 
 import { UserRepository } from "./user.repository"
-import { ErrorMessages } from "../../core/exceptions"
+import { UserNotFoundException } from "../../core/exceptions/domain.exception"
 import { JwtAuthPayload } from "../../shared/types"
 
 @Injectable()
@@ -18,7 +14,7 @@ export class UserService {
   ) {
     const user = await this.userRepository.findOneById(id, options?.isSensitive)
 
-    if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+    if (!user) throw new UserNotFoundException()
 
     return user
   }
@@ -32,20 +28,17 @@ export class UserService {
       options?.isSensitive
     )
 
-    if (!user) throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
+    if (!user) throw new UserNotFoundException()
 
     return user
   }
 
   async delete(id: string, jwtPayload: JwtAuthPayload) {
-    if (jwtPayload.sub !== id && jwtPayload.role !== "admin") {
+    if (jwtPayload.sub !== id && jwtPayload.role !== "admin")
       throw new ForbiddenException()
-    }
 
     const isDeleted = await this.userRepository.deleteOne(id)
 
-    if (!isDeleted) {
-      throw new NotFoundException(ErrorMessages.USER_NOT_FOUND)
-    }
+    if (!isDeleted) throw new UserNotFoundException()
   }
 }

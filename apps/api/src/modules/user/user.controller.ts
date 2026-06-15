@@ -1,9 +1,11 @@
 import {
+  DeleteParamsDto,
   type DeleteResponse,
   DeleteResponseDto,
   FindFirstByEmailInputDto,
   type FindFirstByEmailResponse,
   FindFirstByEmailResponseDto,
+  FindFirstByIdParamsDto,
   type FindFirstByIdResponse,
   FindFirstByIdResponseDto,
 } from "@ecommerce/data-access"
@@ -22,9 +24,11 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ZodSerializerDto(FindFirstByIdResponseDto)
-  @Get("id")
+  @Get(":id")
   @Protected(Roles.ADMIN)
-  async findFirstById(@Param() id: string): Promise<FindFirstByIdResponse> {
+  async findFirstById(
+    @Param() { id }: FindFirstByIdParamsDto
+  ): Promise<FindFirstByIdResponse> {
     return await this.userService.findById(id)
   }
 
@@ -41,7 +45,7 @@ export class UserController {
   @Delete(":id")
   @Protected()
   async delete(
-    @Param() id: string,
+    @Param() { id }: DeleteParamsDto,
     @JwtPayload() jwtPayload: JwtPayloadType
   ): Promise<DeleteResponse> {
     await this.userService.delete(id, jwtPayload)

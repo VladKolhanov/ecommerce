@@ -1,19 +1,15 @@
 import { createZodValidationPipe } from "nestjs-zod"
 import { z, ZodError } from "zod"
 
-import { AppException, ErrorCode } from "../exceptions"
+import { InternalServerException } from "../exceptions/system.exception"
+import { RequestValidationException } from "../exceptions/validation.exception"
 
 export const ZodValidationPipe = createZodValidationPipe({
   createValidationException: (error) => {
     if (error instanceof ZodError) {
-      return new AppException({
-        code: ErrorCode.VALIDATION_ERROR,
-        details: z.treeifyError(error),
-      })
+      return new RequestValidationException(z.treeifyError(error))
     } else {
-      return new AppException({
-        code: ErrorCode.INTERNAL_SERVER_ERROR,
-      })
+      return new InternalServerException("Unexpected validation error")
     }
   },
 })

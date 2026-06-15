@@ -1,8 +1,9 @@
 import { tryCatch } from "@ecommerce/utils"
-import { Injectable, UnauthorizedException } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 
 import { EnvService } from "../../../core/env/env.service"
+import { AuthInvalidTokenException } from "../../../core/exceptions/domain.exception"
 import type { JwtAuthPayload, JwtTwoFactorPayload } from "../../../shared/types"
 import { UserService } from "../../user/user.service"
 import { TokensRepository } from "../repositories/tokens.repository"
@@ -53,17 +54,17 @@ export class TokensService {
   async refreshTokens(refreshToken: string, agent: string) {
     const token = await this.tokensRepository.getRefreshToken(refreshToken)
 
-    if (!token) throw new UnauthorizedException()
+    if (!token) throw new AuthInvalidTokenException()
 
     const isExpired = new Date(token.expires) < new Date()
 
     await this.tokensRepository.deleteRefreshToken(refreshToken)
 
-    if (isExpired) throw new UnauthorizedException("Token expired")
+    if (isExpired) throw new AuthInvalidTokenException()
 
     const [user] = await tryCatch(this.userService.findById(token.userId))
 
-    if (!user) throw new UnauthorizedException()
+    if (!user) throw new AuthInvalidTokenException()
 
     return this.generateAuthTokens({ role: user.role, sub: user.id }, agent)
   }

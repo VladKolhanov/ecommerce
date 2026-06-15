@@ -1,14 +1,12 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common"
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 
 import { EnvService } from "../../../core/env/env.service"
-import { HTTP_ERROR_MESSAGES } from "../../../core/exceptions/messages.constant"
-import { JwtTwoFactorPayload } from "../../../shared/types"
+import {
+  AuthInvalidHeaderException,
+  AuthInvalidTokenException,
+} from "../../../core/exceptions/domain.exception"
+import { JwtTokens } from "../../../shared/types"
 
 @Injectable()
 export class TwoFactorGuard implements CanActivate {
@@ -22,29 +20,25 @@ export class TwoFactorGuard implements CanActivate {
 
     const authHeader = request.headers.authorization
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new UnauthorizedException(HTTP_ERROR_MESSAGES.AUTH_INVALID_HEADER)
+      throw new AuthInvalidHeaderException()
     }
 
     const token = authHeader.split(" ")[1]
 
     try {
-      const payload = await this.jwtService.verifyAsync<JwtTwoFactorPayload>(
-        token,
-        {
-          secret: this.envService.jwtTwoFactorSecret,
-        }
-      )
+      const payload = await this.jwtService.verifyAsync<JwtTokens>(token, {
+        secret: this.envService.jwtTwoFactorSecret,
+      })
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (payload.type !== "TWO_FACTOR") {
-        throw new UnauthorizedException(HTTP_ERROR_MESSAGES.AUTH_INVALID_TOKEN)
+        throw new AuthInvalidTokenException()
       }
 
       request["twoFactorUser"] = payload
 
       return true
     } catch {
-      throw new UnauthorizedException(HTTP_ERROR_MESSAGES.AUTH_TOKEN_EXPIRED)
+      throw new AuthInvalidTokenException()
     }
   }
 }

@@ -1,4 +1,4 @@
-import { UserRoles } from "@ecommerce/data-access"
+import { Roles } from "@ecommerce/data-access"
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
 
@@ -9,7 +9,7 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<UserRoles[]>(
+    const requiredRoles = this.reflector.getAllAndOverride<Roles[]>(
       MetadataKeys.ROLE_KEY,
       [context.getHandler(), context.getClass()]
     )

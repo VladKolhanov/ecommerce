@@ -2,64 +2,109 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  HttpException,
   HttpStatus,
 } from "@nestjs/common"
 import { HttpAdapterHost } from "@nestjs/core"
 import { Logger } from "nestjs-pino"
 
-import { AppException, ErrorCode, ErrorMessages } from "../exceptions"
-
-type ErrorResponse = {
-  status: HttpStatus
-  code: ErrorCode | `HTTP_${HttpStatus}`
-  message: string
-  details: AppException["details"]
-  traceId: string
-}
+import { ErrorResponse } from "../../shared/types"
+import { EnvService } from "../env/env.service"
+import { DomainException } from "../exceptions/domain.exception"
+import { SystemException } from "../exceptions/system.exception"
+import { RequestValidationException } from "../exceptions/validation.exception"
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
-    private readonly logger: Logger
+    private readonly logger: Logger,
+    private readonly envService: EnvService
   ) {}
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  catch(
+    exception:
+      | DomainException
+      | SystemException
+      | RequestValidationException
+      | Error,
+    host: ArgumentsHost
+  ): void {
     const { httpAdapter } = this.httpAdapterHost
     const ctx = host.switchToHttp()
     const response = ctx.getResponse()
     const request = ctx.getRequest()
 
-    const responseBody: ErrorResponse = {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      code: ErrorCode.INTERNAL_SERVER_ERROR,
-      message: ErrorMessages.INTERNAL_SERVER_ERROR,
-      traceId: request.id || request.headers["x-request-id"] || null,
-      details: null,
+    let status = HttpStatus.INTERNAL_SERVER_ERROR
+    let responseBody: ErrorResponse = {
+      success: false,
+      error: {
+        code: "UNKNOWN_ERROR",
+        message: "Something went wrong",
+        ...(this.envService.isDev && {
+          details: {
+            description: exception.message,
+            stack: exception.stack,
+          },
+        }),
+      },
+      timestamp: new Date().toISOString(),
+      path: request.originalUrl,
     }
 
-    if (exception instanceof AppException) {
-      responseBody.status = exception.getStatus()
-      responseBody.code = exception.code
-      responseBody.message = exception.message
-      responseBody.details = exception.details
-    } else if (exception instanceof HttpException) {
-      responseBody.status = exception.getStatus()
-      responseBody.code = `HTTP_${responseBody.status}`
-      responseBody.message = exception.message
-    }
+    const isDomainException = exception instanceof DomainException
+    const isSystemException = exception instanceof SystemException
+    const isValidationException =
+      exception instanceof RequestValidationException
 
-    if (responseBody.status >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error(
-        {
-          err: exception,
-          req: request,
+    if (isDomainException) {
+      status = exception.status
+      responseBody = {
+        ...responseBody,
+        error: { code: exception.code, message: exception.message },
+      }
+    } else if (isSystemException) {
+      status = exception.status
+      responseBody = {
+        ...responseBody,
+        error: {
+          code: exception.code,
+          message: exception.publicMessage,
+          ...(this.envService.isDev && {
+            details: {
+              description: exception.message,
+              stack: exception.stack,
+            },
+          }),
         },
-        `Request failed on ${request.url}`
-      )
+      }
+    } else if (isValidationException) {
+      status = exception.status
+      responseBody = {
+        ...responseBody,
+        error: {
+          code: exception.code,
+          message: exception.message,
+          details: exception.details,
+        },
+      }
     }
 
-    httpAdapter.reply(response, responseBody, responseBody.status)
+    if (isDomainException) {
+      this.logger.warn({
+        err: exception,
+        req: request,
+        path: request.originalUrl,
+      })
+    }
+
+    if (isSystemException || responseBody.error.code === "UNKNOWN_ERROR") {
+      this.logger.error({
+        err: exception,
+        req: request,
+        path: request.originalUrl,
+      })
+    }
+
+    httpAdapter.reply(response, responseBody, status)
   }
 }
