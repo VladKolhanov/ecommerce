@@ -6,12 +6,19 @@ import {
 } from "@nestjs/common"
 import { HttpAdapterHost } from "@nestjs/core"
 import { Logger } from "nestjs-pino"
+import { ZodSerializationException } from "nestjs-zod"
 
 import { ErrorResponse } from "../../shared/types"
 import { EnvService } from "../env/env.service"
 import { DomainException } from "../exceptions/domain.exception"
-import { SystemException } from "../exceptions/system.exception"
-import { RequestValidationException } from "../exceptions/validation.exception"
+import {
+  ResponseSerializationException,
+  SystemException,
+} from "../exceptions/system.exception"
+import {
+  IncorrectSourceAppException,
+  RequestValidationException,
+} from "../exceptions/validation.exception"
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -53,8 +60,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const isDomainException = exception instanceof DomainException
     const isSystemException = exception instanceof SystemException
-    const isValidationException =
+    const isZodSerializationException =
+      exception instanceof ZodSerializationException
+    const isRequestValidationException =
       exception instanceof RequestValidationException
+    const isIncorrectSourceAppException =
+      exception instanceof IncorrectSourceAppException
 
     if (isDomainException) {
       status = exception.status
@@ -62,7 +73,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ...responseBody,
         error: { code: exception.code, message: exception.message },
       }
-    } else if (isSystemException) {
+    }
+
+    if (isSystemException) {
       status = exception.status
       responseBody = {
         ...responseBody,
@@ -77,7 +90,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
           }),
         },
       }
-    } else if (isValidationException) {
+    }
+
+    if (isRequestValidationException) {
       status = exception.status
       responseBody = {
         ...responseBody,
@@ -85,6 +100,36 @@ export class AllExceptionsFilter implements ExceptionFilter {
           code: exception.code,
           message: exception.message,
           details: exception.details,
+        },
+      }
+    }
+
+    if (isIncorrectSourceAppException) {
+      status = exception.status
+      responseBody = {
+        ...responseBody,
+        error: {
+          code: exception.code,
+          message: exception.message,
+        },
+      }
+    }
+
+    if (isZodSerializationException) {
+      const exception = new ResponseSerializationException()
+
+      status = exception.status
+      responseBody = {
+        ...responseBody,
+        error: {
+          code: exception.code,
+          message: exception.publicMessage,
+          ...(this.envService.isDev && {
+            details: {
+              description: exception.message,
+              stack: exception.stack,
+            },
+          }),
         },
       }
     }
@@ -97,7 +142,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       })
     }
 
-    if (isSystemException || responseBody.error.code === "UNKNOWN_ERROR") {
+    if (
+      isSystemException ||
+      isZodSerializationException ||
+      responseBody.error.code === "UNKNOWN_ERROR"
+    ) {
       this.logger.error({
         err: exception,
         req: request,

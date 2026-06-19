@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common"
-import { generateSecret, verify } from "otplib"
+import { generateSecret, generateURI, verify } from "otplib"
 import QRCode from "qrcode"
 
+import { EnvService } from "../../../core/env/env.service"
 import { AuthTOTPFailedException } from "../../../core/exceptions/domain.exception"
 import { EncryptionService } from "../../../shared/services/encryption/encryption.service"
 import { TwoFactorRepository } from "../repositories/two-factor.repository"
@@ -10,7 +11,8 @@ import { TwoFactorRepository } from "../repositories/two-factor.repository"
 export class TwoFactorService {
   constructor(
     private readonly twoFactorRepository: TwoFactorRepository,
-    private readonly encryptionService: EncryptionService
+    private readonly encryptionService: EncryptionService,
+    private readonly envService: EnvService
   ) {}
 
   async generateQrcode(id: string) {
@@ -19,7 +21,13 @@ export class TwoFactorService {
 
     await this.twoFactorRepository.saveTwoFactorSecret(id, secretSecure)
 
-    const qrcode = await QRCode.toDataURL(secret)
+    const uri = generateURI({
+      issuer: this.envService.totpIssuer,
+      label: this.envService.totpLabel,
+      secret,
+    })
+
+    const qrcode = await QRCode.toDataURL(uri)
 
     return qrcode
   }

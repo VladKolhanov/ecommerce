@@ -2,6 +2,7 @@ import { Roles } from "@ecommerce/data-access"
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
 
+import { AuthAccessDeniedException } from "../../../core/exceptions/domain.exception"
 import { MetadataKeys } from "../../../shared/constants"
 
 @Injectable()
@@ -21,6 +22,13 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest()
 
-    return requiredRoles.length ? requiredRoles.includes(user.role) : true
+    const hasRequiredRole =
+      requiredRoles.length === 0 || requiredRoles.includes(user.role)
+
+    if (!hasRequiredRole) {
+      throw new AuthAccessDeniedException()
+    }
+
+    return true
   }
 }

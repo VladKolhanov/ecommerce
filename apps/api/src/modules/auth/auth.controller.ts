@@ -23,7 +23,6 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from "@nestjs/common"
 import { type Request, type Response } from "express"
@@ -78,9 +77,13 @@ export class AuthController {
     if (source === "shop" && "accessToken" in tokens) {
       this.setRefreshTokenToCookies(tokens.refreshToken, res)
       return { accessToken: tokens.accessToken, success: true }
-    } else {
-      return { success: true }
     }
+
+    if (source === "admin" && "twoFactorToken" in tokens) {
+      return { twoFactorToken: tokens.twoFactorToken, success: true }
+    }
+
+    return { success: false }
   }
 
   @ZodSerializerDto(LogoutResponseDto)
@@ -112,11 +115,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @UserAgent() agent: string
   ): Promise<RefreshTokenResponse> {
-    const refreshToken = req.cookies[
-      this.envService.refreshTokenCookieKey
-    ] as string
-
-    if (!refreshToken) throw new UnauthorizedException()
+    const refreshToken = req.cookies[this.envService.refreshTokenCookieKey]
 
     const tokens = await this.tokenService.refreshTokens(refreshToken, agent)
 

@@ -6,8 +6,10 @@ export const DomainErrorCodes = new Set([
   "AUTH_INVALID_CREDENTIALS",
   "AUTH_INVALID_HEADER",
   "AUTH_ACCESS_DENIED",
+  "AUTH_INVALID_ACCESS_TOKEN",
   "AUTH_TOTP_FAILED",
-  "AUTH_INVALID_TOKEN",
+  "AUTH_INVALID_TFA_TOKEN",
+  "AUTH_INVALID_REFRESH_TOKEN",
 ] as const)
 export type DomainErrorCodes = ValueOfSet<typeof DomainErrorCodes>
 
@@ -60,6 +62,15 @@ export class AuthAccessDeniedException extends DomainException {
   }
 }
 
+export class AuthInvalidAccessTokenException extends DomainException {
+  readonly code: DomainErrorCodes = "AUTH_INVALID_ACCESS_TOKEN"
+  readonly status = HttpStatus.UNAUTHORIZED
+
+  constructor() {
+    super("Invalid or expired access token")
+  }
+}
+
 export class AuthTOTPFailedException extends DomainException {
   readonly code: DomainErrorCodes = "AUTH_TOTP_FAILED"
   readonly status = HttpStatus.UNAUTHORIZED
@@ -69,8 +80,17 @@ export class AuthTOTPFailedException extends DomainException {
   }
 }
 
-export class AuthInvalidTokenException extends DomainException {
-  readonly code: DomainErrorCodes = "AUTH_INVALID_TOKEN"
+export class AuthInvalidTFATokenException extends DomainException {
+  readonly code: DomainErrorCodes = "AUTH_INVALID_TFA_TOKEN"
+  readonly status = HttpStatus.UNAUTHORIZED
+
+  constructor() {
+    super("Invalid two-factor token")
+  }
+}
+
+export class AuthInvalidRefreshTokenException extends DomainException {
+  readonly code: DomainErrorCodes = "AUTH_INVALID_REFRESH_TOKEN"
   readonly status = HttpStatus.UNAUTHORIZED
 
   constructor() {

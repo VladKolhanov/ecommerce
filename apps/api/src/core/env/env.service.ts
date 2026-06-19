@@ -54,6 +54,24 @@ export class EnvService {
     })
   }
 
+  get jwtTwoFactorExpire() {
+    return this.configService.getOrThrow("JWT_TWO_FACTOR_EXPIRE", {
+      infer: true,
+    })
+  }
+
+  get totpIssuer() {
+    return this.configService.getOrThrow("TOTP_ISSUER", {
+      infer: true,
+    })
+  }
+
+  get totpLabel() {
+    return this.configService.getOrThrow("TOTP_LABEL", {
+      infer: true,
+    })
+  }
+
   get jwtTokenExpire() {
     return this.configService.getOrThrow("JWT_TOKEN_EXPIRE", { infer: true })
   }

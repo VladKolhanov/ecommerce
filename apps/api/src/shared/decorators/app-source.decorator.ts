@@ -1,9 +1,6 @@
-import {
-  BadRequestException,
-  createParamDecorator,
-  type ExecutionContext,
-} from "@nestjs/common"
+import { createParamDecorator, type ExecutionContext } from "@nestjs/common"
 
+import { IncorrectSourceAppException } from "../../core/exceptions/validation.exception"
 import type { AppSourceType } from "../types"
 
 export const AppSource = createParamDecorator(
@@ -12,14 +9,8 @@ export const AppSource = createParamDecorator(
 
     const source = request.headers["x-app-source"] as unknown
 
-    if (!source) {
-      throw new BadRequestException('Missing "X-App-Source" header')
-    }
-
-    if (source !== "shop" && source !== "admin") {
-      throw new BadRequestException(
-        'Invalid "X-App-Source" header value. Must be "shop" or "admin"'
-      )
+    if (!source || (source !== "shop" && source !== "admin")) {
+      throw new IncorrectSourceAppException()
     }
 
     return source

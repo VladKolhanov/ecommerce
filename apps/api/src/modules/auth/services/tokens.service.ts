@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 
 import { EnvService } from "../../../core/env/env.service"
-import { AuthInvalidTokenException } from "../../../core/exceptions/domain.exception"
+import { AuthInvalidRefreshTokenException } from "../../../core/exceptions/domain.exception"
 import type { JwtAuthPayload, JwtTwoFactorPayload } from "../../../shared/types"
 import { UserService } from "../../user/user.service"
 import { TokensRepository } from "../repositories/tokens.repository"
@@ -45,26 +45,28 @@ export class TokensService {
 
     const token = await this.jwtService.signAsync(twoFactorTokenPayload, {
       secret: this.envService.jwtTwoFactorSecret,
-      expiresIn: "5m",
+      expiresIn: this.envService.jwtTwoFactorExpire,
     })
 
     return token
   }
 
-  async refreshTokens(refreshToken: string, agent: string) {
+  async refreshTokens(refreshToken: string | null, agent: string) {
+    if (!refreshToken) throw new AuthInvalidRefreshTokenException()
+
     const token = await this.tokensRepository.getRefreshToken(refreshToken)
 
-    if (!token) throw new AuthInvalidTokenException()
+    if (!token) throw new AuthInvalidRefreshTokenException()
 
     const isExpired = new Date(token.expires) < new Date()
 
     await this.tokensRepository.deleteRefreshToken(refreshToken)
 
-    if (isExpired) throw new AuthInvalidTokenException()
+    if (isExpired) throw new AuthInvalidRefreshTokenException()
 
     const [user] = await tryCatch(this.userService.findById(token.userId))
 
-    if (!user) throw new AuthInvalidTokenException()
+    if (!user) throw new AuthInvalidRefreshTokenException()
 
     return this.generateAuthTokens({ role: user.role, sub: user.id }, agent)
   }

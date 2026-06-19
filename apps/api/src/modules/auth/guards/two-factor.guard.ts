@@ -4,7 +4,7 @@ import { JwtService } from "@nestjs/jwt"
 import { EnvService } from "../../../core/env/env.service"
 import {
   AuthInvalidHeaderException,
-  AuthInvalidTokenException,
+  AuthInvalidTFATokenException,
 } from "../../../core/exceptions/domain.exception"
 import { JwtTokens } from "../../../shared/types"
 
@@ -31,14 +31,13 @@ export class TwoFactorGuard implements CanActivate {
       })
 
       if (payload.type !== "TWO_FACTOR") {
-        throw new AuthInvalidTokenException()
+        throw new AuthInvalidTFATokenException()
       }
-
       request["twoFactorUser"] = payload
 
       return true
     } catch {
-      throw new AuthInvalidTokenException()
+      throw new AuthInvalidTFATokenException()
     }
   }
 }

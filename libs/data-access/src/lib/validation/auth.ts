@@ -44,6 +44,7 @@ export const loginSchemaInput = z.object({
 export const loginSchemaResponse = z.object({
   success: z.boolean(),
   accessToken: zStringOptional(),
+  twoFactorToken: zStringOptional(),
 })
 export class LoginInputDto extends createZodDto(loginSchemaInput) {}
 export class LoginResponseDto extends createZodDto(loginSchemaResponse) {}
@@ -77,6 +78,7 @@ export type RefreshTokenResponse = z.infer<typeof refreshTokenSchemaResponse>
  */
 
 export const twoFactorSetupSchemaResponse = z.object({
+  isTwoFactorEnabled: z.boolean(),
   qrcode: zStringOptional(),
 })
 export class TwoFactorSetupResponseDto extends createZodDto(
@@ -94,7 +96,7 @@ export const twoFactorVerifySchemaInput = z.object({
   code: zStringRequired(),
 })
 export const twoFactorVerifySchemaResponse = z.object({
-  accessToken: zStringRequired,
+  accessToken: zStringRequired(),
 })
 export class TwoFactorVerifyInputDto extends createZodDto(
   twoFactorVerifySchemaInput

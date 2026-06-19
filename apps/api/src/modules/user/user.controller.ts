@@ -2,14 +2,14 @@ import {
   DeleteParamsDto,
   type DeleteResponse,
   DeleteResponseDto,
-  FindFirstByEmailInputDto,
+  FindFirstByEmailQueryDto,
   type FindFirstByEmailResponse,
   FindFirstByEmailResponseDto,
   FindFirstByIdParamsDto,
   type FindFirstByIdResponse,
   FindFirstByIdResponseDto,
 } from "@ecommerce/data-access"
-import { Body, Controller, Delete, Get, Param } from "@nestjs/common"
+import { Controller, Delete, Get, Param, Query } from "@nestjs/common"
 import { ZodSerializerDto } from "nestjs-zod"
 
 import { UserService } from "./user.service"
@@ -19,7 +19,6 @@ import { JwtPayload } from "../auth/decorators/jwt-payload.decorator"
 import { Protected } from "../auth/decorators/protected.decorator"
 
 @Controller("user")
-@Protected()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -33,10 +32,10 @@ export class UserController {
   }
 
   @ZodSerializerDto(FindFirstByEmailResponseDto)
-  @Get("email")
+  @Get()
   @Protected(Roles.ADMIN)
   async findFirstByEmail(
-    @Body() dto: FindFirstByEmailInputDto
+    @Query() dto: FindFirstByEmailQueryDto
   ): Promise<FindFirstByEmailResponse> {
     return await this.userService.findByEmail(dto.email)
   }

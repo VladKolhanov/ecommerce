@@ -29,7 +29,7 @@ export type FindFirstByIdParams = z.infer<typeof findFirstByIdSchemaParams>
  * FindFirstByEmail
  */
 
-export const findFirstByEmailSchemaInput = z.object({
+export const findFirstByEmailSchemaQuery = z.object({
   email: zEmail(),
 })
 export const findFirstByEmailSchemaResponse = z.object({
@@ -37,13 +37,13 @@ export const findFirstByEmailSchemaResponse = z.object({
   email: zEmail(),
   role: z.enum(userRoleEnum),
 })
-export class FindFirstByEmailInputDto extends createZodDto(
-  findFirstByEmailSchemaInput
+export class FindFirstByEmailQueryDto extends createZodDto(
+  findFirstByEmailSchemaQuery
 ) {}
 export class FindFirstByEmailResponseDto extends createZodDto(
   findFirstByEmailSchemaResponse
 ) {}
-export type FindFirstByEmailInput = z.infer<typeof findFirstByEmailSchemaInput>
+export type FindFirstByEmailQuery = z.infer<typeof findFirstByEmailSchemaQuery>
 export type FindFirstByEmailResponse = z.infer<
   typeof findFirstByEmailSchemaResponse
 >

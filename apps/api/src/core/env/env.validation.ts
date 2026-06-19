@@ -15,10 +15,13 @@ const envSchema = z.object({
   LOGTAIL_HOST: zStringOptional(),
   ENCRYPTION_SECRET: zStringRequired(),
   JWT_TWO_FACTOR_SECRET: zStringRequired(),
+  JWT_TWO_FACTOR_EXPIRE: z.coerce.number(),
   JWT_SECRET: zStringRequired(),
   JWT_TOKEN_EXPIRE: z.coerce.number(),
   REFRESH_TOKEN_EXPIRE: z.coerce.number(),
   REFRESH_TOKEN_COOKIE_KEY: zStringRequired(),
+  TOTP_ISSUER: zStringRequired(),
+  TOTP_LABEL: zStringRequired(),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>
